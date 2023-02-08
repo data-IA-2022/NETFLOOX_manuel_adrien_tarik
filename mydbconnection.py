@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 
 def connect_to_db(config_file, section, ssh=False, local_port=None, ssh_section=None):
     # Read configuration information from file
-    config = yaml.safe_load(config_file)
+    config = yaml.safe_load(open(config_file, 'r'))
 
     if ssh:
         ssh_config = config[ssh_section]['user']
