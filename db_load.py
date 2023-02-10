@@ -52,7 +52,7 @@ dtype= {
     ### title.episode
     'parentTconst':         SQLAT.VARCHAR(10),
     'seasonNumber':         SQLAT.SMALLINT(),
-    'episodeNumber':        SQLAT.SMALLINT(),
+    'episodeNumber':        SQLAT.INTEGER(),
 
     ### title.principals
     'category':             SQLAT.VARCHAR(20),
@@ -65,7 +65,7 @@ dtype= {
 }
 
 doss = "data"
-file_names = ("name.basics.tsv.gz", "title.akas.tsv.gz", "title.basics.tsv.gz", "title.crew.tsv.gz", "title.episode.tsv.gz", "title.principals.tsv.gz", "title.ratings.tsv.gz")
+file_names = ("title.principals.tsv.gz", "title.ratings.tsv.gz")
 ch_size = 1000000
 
 start_time_global = time.time()
@@ -80,7 +80,7 @@ for fn in file_names:
 
     print(f"{n_file:2}/{len(file_names)} - {fns} - get nb_lines : ", end='')
     nb_lines = sum(1 for _ in gzip.open(path)) - 1
-    print(nb_lines)
+    print(f"{nb_lines:,}")
 
     nb_chunks = ceil(nb_lines / ch_size)
 
@@ -103,8 +103,9 @@ for fn in file_names:
 
                 df_knf = df.assign(tconst = df['knownForTitles'].str.split(','))[['nconst', 'tconst']].explode('tconst').dropna()
 
-                df.drop(columns='knownForTitles').to_sql(fns, conn, dtype = dtype, if_exists=if_ex, index=False)
-                df_knf.to_sql(fns + "_knowForTitles", conn, dtype=dtype, if_exists=if_ex, index=False)
+                df.drop(columns='knownForTitles', inplace=True)
+                df.to_sql(fns, conn, dtype = dtype, if_exists=if_ex, index=False)
+                df_knf.to_sql(fns + "_knowfortitles", conn, dtype=dtype, if_exists=if_ex, index=False)
 
             else:
 
@@ -113,13 +114,15 @@ for fn in file_names:
             if_ex = 'append'
 
             n += 1
-            print(f" - {n_file:2}/{len(file_names)} - {fns} : {n:5,} / {nb_chunks:,}  -  {n/nb_chunks:7.4%}")
+            print(f" - {n_file:2}/{len(file_names)} - {fns} : {n:5,} / {nb_chunks:,}  -  {n/nb_chunks:8.4%}")
 
     d = time.time() - file_time
     m = int(d/60)
     s = int(d%60)
 
     print(f" ----- {m:3} m {s:02}", end='\n\n')
+
+conn.commit()
 
 d = time.time() - start_time_global
 h = int(d/3600)
