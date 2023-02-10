@@ -1,0 +1,119 @@
+param:
+
+    chunksize: 1000000
+    folder: 'data'
+
+    connection_config_file: config.yaml
+    config_file_section: mysql_azure_netfloox
+
+files:
+
+    name_basics:
+
+        name_file:          name.basics.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            nconst:             VARCHAR 10
+            primaryName:        VARCHAR 300
+            birthYear:          SMALLINT
+            deathYear:          SMALLINT
+            primaryProfession:  VARCHAR 300
+
+    name_basics_knownfortitles:
+
+        name_file:          name.basics.tsv.gz
+        na_values:          ['\N', 'N']
+        explode_on :        knownForTitles
+        explode_new_name :  tconst
+        dtype:
+
+            nconst:             VARCHAR 10
+            tconst:             VARCHAR 10
+
+    title_akas:
+
+        name_file:          title.akas.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            titleId:            VARCHAR 10
+            ordering:           SMALLINT
+            title:              VARCHAR 1000
+            region:             VARCHAR 5
+            language:           VARCHAR 5
+            types:              VARCHAR 40
+            attributes:         VARCHAR 255
+            isOriginalTitle:    BOOLEAN
+
+    title_basics:
+
+        name_file:          title.basics.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            tconst:             VARCHAR 10
+            titleType:          VARCHAR 15
+            primaryTitle:       VARCHAR 500
+            originalTitle:      VARCHAR 500
+            isAdult:            BOOLEAN
+            startYear:          SMALLINT
+            endYear:            SMALLINT
+            runtimeMinutes:     INTEGER
+            genres:             VARCHAR 100
+
+    title_crew_directors:
+
+        name_file:          title.crew.tsv.gz
+        na_values:          ['\N', 'N']
+        explode_on :        directors
+        explode_new_name :  nconst
+        dtype:
+
+            nconst:             VARCHAR 10
+            tconst:             VARCHAR 10
+
+    title_crew_writers:
+
+        name_file:          title.crew.tsv.gz
+        na_values:          ['\N', 'N']
+        explode_on :        writers
+        explode_new_name :  nconst
+        dtype:
+
+            nconst:             VARCHAR 10
+            tconst:             VARCHAR 10
+
+    title_episode:
+
+        name_file:          title.episode.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            tconst:             VARCHAR 10
+            parentTconst:       VARCHAR 10
+            seasonNumber:       SMALLINT
+            episodeNumber:      INTEGER
+
+    title_principals:
+
+        name_file:          title.principals.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            tconst:             VARCHAR 10
+            ordering:           SMALLINT
+            nconst:             VARCHAR 10
+            category:           VARCHAR 20
+            job:                VARCHAR 300
+            characters:         VARCHAR 1400
+
+    title_ratings:
+
+        name_file:          title.ratings.tsv.gz
+        na_values:          ['\N', 'N']
+        dtype:
+
+            tconst:             VARCHAR 10
+            averageRating:      FLOAT
+            numVotes:           INTEGER
