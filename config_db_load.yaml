@@ -1,10 +1,10 @@
 param:
 
-    chunksize: 1000000
-    folder: 'data'
+    chunksize:              1000000
+    folder:                 'data'
 
     connection_config_file: config.yaml
-    config_file_section: mysql_azure_netfloox
+    config_file_section:    mysql_azure_netfloox
 
 files:
 
@@ -12,7 +12,7 @@ files:
 
         name_file:          name.basics.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             nconst:             VARCHAR 10
             primaryName:        VARCHAR 300
@@ -26,7 +26,7 @@ files:
         na_values:          ['\N', 'N']
         explode_on :        knownForTitles
         explode_new_name :  tconst
-        dtype:
+        column:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -35,7 +35,7 @@ files:
 
         name_file:          title.akas.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             titleId:            VARCHAR 10
             ordering:           SMALLINT
@@ -50,7 +50,7 @@ files:
 
         name_file:          title.basics.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             tconst:             VARCHAR 10
             titleType:          VARCHAR 15
@@ -68,7 +68,7 @@ files:
         na_values:          ['\N', 'N']
         explode_on :        directors
         explode_new_name :  nconst
-        dtype:
+        column:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -79,7 +79,7 @@ files:
         na_values:          ['\N', 'N']
         explode_on :        writers
         explode_new_name :  nconst
-        dtype:
+        column:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -88,7 +88,7 @@ files:
 
         name_file:          title.episode.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             tconst:             VARCHAR 10
             parentTconst:       VARCHAR 10
@@ -99,7 +99,7 @@ files:
 
         name_file:          title.principals.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             tconst:             VARCHAR 10
             ordering:           SMALLINT
@@ -112,7 +112,7 @@ files:
 
         name_file:          title.ratings.tsv.gz
         na_values:          ['\N', 'N']
-        dtype:
+        column:
 
             tconst:             VARCHAR 10
             averageRating:      FLOAT
