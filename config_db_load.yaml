@@ -8,11 +8,29 @@ param:
 
 files:
 
+    title_basics:
+
+        name_file:          title.basics.tsv.gz
+        na_values:          ['\N', 'N']
+        primary_keys:       ['tconst']
+        columns:
+
+            tconst:             VARCHAR 10
+            titleType:          VARCHAR 15
+            primaryTitle:       VARCHAR 500
+            originalTitle:      VARCHAR 500
+            isAdult:            BOOLEAN
+            startYear:          SMALLINT
+            endYear:            SMALLINT
+            runtimeMinutes:     INTEGER
+            genres:             VARCHAR 100
+
     name_basics:
 
         name_file:          name.basics.tsv.gz
         na_values:          ['\N', 'N']
-        column:
+        primary_keys:       ['nconst']
+        columns:
 
             nconst:             VARCHAR 10
             primaryName:        VARCHAR 300
@@ -26,7 +44,7 @@ files:
         na_values:          ['\N', 'N']
         explode_on :        knownForTitles
         explode_new_name :  tconst
-        column:
+        columns:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -35,7 +53,7 @@ files:
 
         name_file:          title.akas.tsv.gz
         na_values:          ['\N', 'N']
-        column:
+        columns:
 
             titleId:            VARCHAR 10
             ordering:           SMALLINT
@@ -46,29 +64,13 @@ files:
             attributes:         VARCHAR 255
             isOriginalTitle:    BOOLEAN
 
-    title_basics:
-
-        name_file:          title.basics.tsv.gz
-        na_values:          ['\N', 'N']
-        column:
-
-            tconst:             VARCHAR 10
-            titleType:          VARCHAR 15
-            primaryTitle:       VARCHAR 500
-            originalTitle:      VARCHAR 500
-            isAdult:            BOOLEAN
-            startYear:          SMALLINT
-            endYear:            SMALLINT
-            runtimeMinutes:     INTEGER
-            genres:             VARCHAR 100
-
     title_crew_directors:
 
         name_file:          title.crew.tsv.gz
         na_values:          ['\N', 'N']
         explode_on :        directors
         explode_new_name :  nconst
-        column:
+        columns:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -79,7 +81,7 @@ files:
         na_values:          ['\N', 'N']
         explode_on :        writers
         explode_new_name :  nconst
-        column:
+        columns:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
@@ -88,7 +90,7 @@ files:
 
         name_file:          title.episode.tsv.gz
         na_values:          ['\N', 'N']
-        column:
+        columns:
 
             tconst:             VARCHAR 10
             parentTconst:       VARCHAR 10
@@ -99,7 +101,7 @@ files:
 
         name_file:          title.principals.tsv.gz
         na_values:          ['\N', 'N']
-        column:
+        columns:
 
             tconst:             VARCHAR 10
             ordering:           SMALLINT
@@ -112,7 +114,7 @@ files:
 
         name_file:          title.ratings.tsv.gz
         na_values:          ['\N', 'N']
-        column:
+        columns:
 
             tconst:             VARCHAR 10
             averageRating:      FLOAT

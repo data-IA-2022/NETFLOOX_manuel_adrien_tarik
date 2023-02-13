@@ -41,7 +41,7 @@ print('ok', end='\n\n')
 
 ##### Boucle création des tables
 table_names = list(config['files'].keys())
-start_time_global = time.time()
+global_time = time.time()
 
 n_file = 0
 for tn in table_names:
@@ -58,7 +58,7 @@ for tn in table_names:
 
     nb_chunks = ceil(nb_lines / ch_size)
 
-    column = convert_dtype(current_file['column'])
+    columns = convert_dtype(current_file['columns'])
 
     with pd.read_csv(path, sep='\t', na_values=current_file['na_values'], quoting=3, low_memory=False, chunksize=ch_size) as chunk_it:
 
@@ -79,9 +79,9 @@ for tn in table_names:
 
                 df = df.explode(new_name).dropna()
 
-            df = df[list(column.keys())]
+            df = df[list(columns.keys())]
 
-            df.to_sql(tn, conn, dtype = column, if_exists=if_ex, index=False)
+            df.to_sql(tn, conn, dtype = columns, if_exists=if_ex, index=False)
 
             if_ex = 'append'
 
@@ -100,10 +100,10 @@ for tn in table_names:
 conn.commit()
 
 # Calcul du temps mis
-d = time.time() - start_time_global
-h = int(d/3600)
+d = time.time() - global_time
+h = f"{int(d/3600):3} h"
 d %= 3600
-m = int(d/60)
-s = int(d%60)
+m = f"{int(d/60):02} m"
+s = f"{int(d%60):02}"
 
-print(f"finif - {h:3} h {m:02} m {s:02}")
+print("Temps total :", h, m, s)
