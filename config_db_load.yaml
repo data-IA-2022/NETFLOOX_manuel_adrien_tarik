@@ -1,10 +1,10 @@
 param:
 
-    chunksize:              1000000
+    chunksize:              1_000_000
     folder:                 'data'
 
     connection_config_file: config.yaml
-    config_file_section:    mysql_azure_netfloox
+    config_file_section:    local
 
 files:
 

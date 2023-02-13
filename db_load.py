@@ -20,7 +20,7 @@ def convert_dtype(types: dict) -> dict:
         'FLOAT':    SQLAT.FLOAT
     }
 
-    return {k: conv[v]() if len(v.split()) == 1 else conv[v.split()[0]](v.split(maxsplit=1)[1]) for k, v in types.items()}
+    return {k: conv[v]() if len(v.split()) == 1 else conv[v.split()[0]](int(v.split(maxsplit=1)[1])) for k, v in types.items()}
 
 
 ##### Chargement des configs
@@ -67,6 +67,8 @@ for tn in table_names:
         n = 0
         for df in chunk_it:
 
+            lines_time = time.time()
+
             if 'explode_on' in current_file:
 
                 explode_on = current_file['explode_on']
@@ -84,7 +86,9 @@ for tn in table_names:
             if_ex = 'append'
 
             n += 1
-            print(f" - {n_file:2}/{len(table_names)} - {tn} : {n:5,} / {nb_chunks:,}  -  {n/nb_chunks:8.4%}")
+            d = time.time() - file_time
+            d = f"{int(d):2} s" if d < 60 else f"{d:5.1} m"
+            print(f" - {n_file:2}/{len(table_names)} - {tn} : {n:5,} / {nb_chunks:,}  -  {n/nb_chunks:8.3%}  -  {d}")
 
     d = time.time() - file_time
     m = int(d/60)
