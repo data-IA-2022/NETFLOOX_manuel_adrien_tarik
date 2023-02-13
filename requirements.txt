@@ -3,3 +3,4 @@ SQLAlchemy==2.0.2
 pyyaml
 mysql-connector-python
 mysqlclient
+pandas
