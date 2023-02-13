@@ -1,13 +1,13 @@
-import mydbconnection as mdbcon
-from sqlalchemy import text
-import sqlalchemy.types as SQLAT
-import pandas as pd
-import time
-import datetime
-import numpy as np
 import gzip
+import time
 from math import ceil
+
+import pandas as pd
+import sqlalchemy.types as SQLAT
 import yaml
+from sqlalchemy import text
+
+import mydbconnection as mdbcon
 
 
 def convert_dtype(types: dict) -> dict:
@@ -96,8 +96,10 @@ for tn in table_names:
 
     print(f" ----- {m:3} m {s:02}", end='\n\n')
 
+# Commit pour être sûr
 conn.commit()
 
+# Calcul du temps mis
 d = time.time() - start_time_global
 h = int(d/3600)
 d %= 3600
