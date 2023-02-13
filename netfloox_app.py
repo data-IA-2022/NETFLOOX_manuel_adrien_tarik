@@ -23,34 +23,126 @@ with open("assets/style.css") as style:
                 
                 <body>
                 <div class="header">
-                <div class="mobile-plan-banner -container">
-                    <div class="badging-indicator">Nouveau&nbsp;!</div>
-                        <div id="" class="mobile-plan-banner -banner-offer-text" data-uia="">
-                            <span>Offres désormais disponibles à partir de <span class="mobile-plan-banner -price-label">5,99&nbsp;€</span>.
-                            </span>/mois</div>
-                            <div class="mobile-plan-button-cta btn-small --alternate-cta-treatment"><a data-uia="ad_plan_banner" class="btn btn-outline btn-small" href="/signup" target="_top">En savoir plus<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="button-icon icon-chevron-next"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.29297 19.2928L14.5859 12L7.29297 4.70706L8.70718 3.29285L16.7072 11.2928C16.8947 11.4804 17.0001 11.7347 17.0001 12C17.0001 12.2652 16.8947 12.5195 16.7072 12.7071L8.70718 20.7071L7.29297 19.2928Z" fill="currentColor"></path></svg></a></div>
+                    <div class="mobile-plan-banner -container">
+                        <div class="badging-indicator">Nouveau&nbsp;!</div>
+                            <div id="" class="mobile-plan-banner -banner-offer-text" data-uia="">
+                                <span>Offres désormais disponibles à partir de <span class="mobile-plan-banner -price-label">5,99&nbsp;€</span>.
+                                </span>/mois</div>
+                                <div class="mobile-plan-button-cta btn-small --alternate-cta-treatment"><a data-uia="ad_plan_banner" class="btn btn-outline btn-small" href="/signup" target="_top">En savoir plus<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="button-icon icon-chevron-next"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.29297 19.2928L14.5859 12L7.29297 4.70706L8.70718 3.29285L16.7072 11.2928C16.8947 11.4804 17.0001 11.7347 17.0001 12C17.0001 12.2652 16.8947 12.5195 16.7072 12.7071L8.70718 20.7071L7.29297 19.2928Z" fill="currentColor"></path></svg></a></div>
                             </div>
-                    <nav>
-                        <img src="netfloox_logo.png" class="logo">
-                        <div class="default-ltr-cache-dk343m ea3diy33">
-                            <div role="img" aria-hidden="true" class="default-ltr-cache-iyxs8w e19utwz74">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hawkins-Icon Hawkins-Icon-Small"><path fill-rule="evenodd" clip-rule="evenodd" d="M8,14.5c0.23033,0 0.84266,-0.2257 1.48679,-1.514c0.27614,-0.5523 0.51294,-1.2239 0.68801,-1.986h-4.3496c0.17507,0.7621 0.41187,1.4337 0.68801,1.986c0.64413,1.2883 1.25646,1.514 1.48679,1.514zM10.4224,9.5c0.0504,-0.47923 0.0776,-0.98089 0.0776,-1.5c0,-0.51911 -0.0272,-1.02077 -0.0776,-1.5h-4.84478c-0.05046,0.47923 -0.07762,0.98089 -0.07762,1.5c0,0.51911 0.02716,1.02077 0.07762,1.5zM11.7092,11c-0.227,1.1217 -0.5775,2.117 -1.0178,2.9184c1.3223,-0.6023 2.4073,-1.6347 3.0764,-2.9184zM14.5,8c0,-0.51627 -0.0602,-1.01848 -0.1739,-1.5h-2.3963c0.0461,0.48588 0.0702,0.98731 0.0702,1.5c0,0.51269 -0.0241,1.01412 -0.0702,1.5h2.3963c0.1137,-0.48152 0.1739,-0.98373 0.1739,-1.5zM4,8c0,-0.51269 0.02411,-1.01412 0.0702,-1.5h-2.39627c-0.11374,0.48152 -0.17393,0.98373 -0.17393,1.5c0,0.51627 0.06019,1.01848 0.17393,1.5h2.39627c-0.04609,-0.48588 -0.0702,-0.98731 -0.0702,-1.5zM5.30864,13.9184c-0.44032,-0.8014 -0.79085,-1.7967 -1.01788,-2.9184h-2.05855c0.66907,1.2837 1.75414,2.3161 3.07643,2.9184zM5.8252,5h4.3496c-0.17507,-0.76207 -0.41187,-1.43374 -0.68801,-1.98603c-0.64413,-1.28826 -1.25646,-1.51397 -1.48679,-1.51397c-0.23033,0 -0.84266,0.22571 -1.48679,1.51397c-0.27614,0.55229 -0.51294,1.22396 -0.68801,1.98603zM11.7092,5h2.0586c-0.6691,-1.28373 -1.7541,-2.31611 -3.0764,-2.91838c0.4403,0.8014 0.7908,1.79668 1.0178,2.91838zM2.23221,5h2.05855c0.22703,-1.1217 0.57756,-2.11698 1.01788,-2.91838c-1.32229,0.60227 -2.40736,1.63466 -3.07643,2.91838zM8,0c4.4183,0 8,3.58172 8,8c0,4.4183 -3.5817,8 -8,8c-4.41828,0 -8,-3.5817 -8,-8c0,-4.41828 3.58172,-8 8,-8z" fill="currentColor"></path>
-                                </svg>
+                        <nav>
+                            <div class="logo">
+                                <img src="https://github.com/data-IA-2022/NETFLOOX_manuel_adrien_tarik/blob/main/assets/netfloox_logo.png?raw=true" class="logo">
                             </div>
-                            <select id="27f4999ebd299" name="LanguageSelect" data-uia="language-picker-header" aria-describedby="4a85d36b6ff5d">
-                                <option selected="" lang="fr" label="Français" value="fr-FR">Français</option>
-                                <option lang="en" label="English" value="en-FR">English</option></select>
-                                <div aria-hidden="true" class="default-ltr-cache-9oi2oi ea3diy32">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hawkins-Icon Hawkins-Icon-Small" aria-hidden="true">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5225,5.99902c0.1576,0 0.2272,0.19843 0.1041,0.29687l-4.41973,3.53579c-0.12176,0.09741 -0.29477,0.09741 -0.41653,0l-4.41975,-3.53579c-0.12304,-0.09844 -0.05344,-0.29687 0.10414,-0.29687z" fill="currentColor"></path>
-                                    </svg>
+                                <div class="our-story-header our-story-header--has-language-selector" data-uia-nmhp="our-story-header">
+                                    <div class="lang-selection-container" id="lang-switcher"><div data-uia="language-picker-header+container" class="ui-select-wrapper">
+                                        <label for="lang-switcher-header-select" class="ui-label">
+                                            <span class="ui-label-text">Choisir la langue</span>
+                                        </label>
+                                        <div class="select-arrow medium prefix globe">
+                                            <select data-uia="language-picker-header" class="ui-select medium" id="lang-switcher-header-select" tabindex="0" placeholder="lang-switcher">
+                                                <option selected="" lang="fr" value="/fr/" data-language="fr" data-country="FR">Français</option>
+                                                <option lang="en" value="/fr-en/" data-language="en" data-country="FR">English</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>  
+                            <a href="/login" class="authLinks redButton" data-uia="header-login-link">S'identifier</a>                
+                        </nav>
+                        <div class="header-content">
+                            <h1>Films, séries et bien plus en illimité.</h1>
+                            <h2>Où que vous soyez. Annulez à tout moment.</h2>
+                            <p>Prêt à regarder Netfloox ? Saisissez votre adresse e-mail pour vous abonner ou réactiver votre abonnement.</p>
+                            <form class="email-signup">
+                                <input type="email" placeholder="Adresse e-mail" required>
+                                <button type="submit">Commencer<svg viewBox="0 0 6 12" xmlns="http://www.w3.org/2000/svg"><desc>chevron</desc><path d="M.61 1.312l.78-.624L5.64 6l-4.25 5.312-.78-.624L4.36 6z" fill="none" fill-rule="evenodd"></path></svg></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="our-story-card animation-card watchOnTv" data-uia-nmhp="watchOnTv" data-uia="our-story-card">
+                    <div class="animation-card-container">
+                        <div class="our-story-card-text">
+                            <h1 id="" class="our-story-card-title" data-uia="animation-card-title">Regardez Netfloox sur votre&nbsp;TV.</h1>
+                            <h2 id="" class="our-story-card-subtitle" data-uia="our-story-card-subtitle">Regardez Netfloox sur votre Smart&nbsp;TV, PlayStation, Xbox, Chromecast, Apple&nbsp;TV, lecteur Blu-ray et&nbsp;bien plus.</h2></div>
+                                <div class="our-story-card-img-container"><div class="our-story-card-animation-container">
+                                    <img alt="" class="our-story-card-img" src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/tv.png" data-uia="our-story-card-img">
+                                        <div class="our-story-card-animation" data-uia="our-story-card-animation"><video class="our-story-card-video" data-uia="our-story-card-video" autoplay="" playsinline="" muted="" loop="">
+                                            <source src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/video-tv-0819.m4v" type="video/mp4"></video><div class="our-story-card-animation-text">
+                                        </div>
+                                        <div class="our-story-card-animation-custom" data-uia="our-story-card-custom" aria-hidden="true">
+                                        </div>
                                 </div>
                         </div>
-                    </nav>
                     </div>
-               
-                
-                
+                    <div class="center-pixel" style="position:absolute">
+                    </div>
+                </div>
+                <div class="our-story-card animation-card watchOnDevice flipped" data-uia-nmhp="watchOnDevice" data-uia="our-story-card">
+                    <div class="animation-card-container">
+                        <div class="our-story-card-text">
+                            <h1 id="" class="our-story-card-title" data-uia="animation-card-title">Où que vous soyez.</h1>
+                            <h2 id="" class="our-story-card-subtitle" data-uia="our-story-card-subtitle">Regardez des films et séries en illimité sur votre TV, smartphone, tablette et ordinateur, sans payer de supplément.</h2>
+                        </div>
+                        <div class="our-story-card-img-container">
+                            <div class="our-story-card-animation-container"><img alt="" class="our-story-card-img" src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/device-pile.png" data-uia="our-story-card-img">
+                                <div class="our-story-card-animation" data-uia="our-story-card-animation">
+                                    <video class="our-story-card-video" data-uia="our-story-card-video" autoplay="" playsinline="" muted="" loop="">
+                                        <source src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/video-devices.m4v" type="video/mp4">
+                                    </video>
+                                        <div class="our-story-card-animation-text">
+                                        </div>
+                                        <div class="our-story-card-animation-custom" data-uia="our-story-card-custom" aria-hidden="true">
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="center-pixel" style="position:absolute">
+                    </div>
+                </div>
+                </div>
+                <div class="our-story-card animation-card kidsValueProp" data-uia-nmhp="kidsValueProp" data-uia="our-story-card"><div class="animation-card-container"><div class="our-story-card-text"><h1 id="" class="our-story-card-title" data-uia="animation-card-title">Créez des profils pour les enfants.</h1><h2 id="" class="our-story-card-subtitle" data-uia="our-story-card-subtitle">Les enfants découvrent de nouvelles aventures et retrouvent leurs personnages préférés dans un espace bien à eux, déjà inclus dans votre abonnement.</h2></div><div class="our-story-card-img-container"><div class="our-story-card-animation-container"><img alt="" class="our-story-card-img" src="https://occ-0-6613-769.1.nflxso.net/dnm/api/v6/19OhWN2dO19C9txTON9tvTFtefw/AAAABbN6pi_bFc9A7RIro_XUCRVuEb-PNbPx2G8CMhztwzwCRI6k5QsMd_qUPPkb89KSQwBFg0ijdx88drv37Y4unvXzCjB-V0vIk3mP.png?r=a3e" data-uia="our-story-card-img"><div class="our-story-card-animation" data-uia="our-story-card-animation"><div class="our-story-card-animation-text"></div><div class="our-story-card-animation-custom" data-uia="our-story-card-custom" aria-hidden="true"></div></div></div></div><div class="center-pixel" style="position:absolute"></div></div></div>
+                <div class="our-story-card animation-card downloadAndWatch flipped" data-uia-nmhp="downloadAndWatch" data-uia="our-story-card"><div class="animation-card-container"><div class="our-story-card-text"><h1 id="" class="our-story-card-title" data-uia="animation-card-title">Téléchargez vos séries préférées pour les regarder hors connexion.</h1><h2 id="" class="our-story-card-subtitle" data-uia="our-story-card-subtitle">Disponible avec toutes les offres, sauf Essentiel avec pub.</h2></div><div class="our-story-card-img-container"><div class="our-story-card-animation-container"><img alt="" class="our-story-card-img" src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/mobile-0819.jpg" data-uia="our-story-card-img"><div class="our-story-card-animation" data-uia="our-story-card-animation"><div class="our-story-card-animation-image"><img alt="" src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/boxshot.png"></div><div class="our-story-card-animation-text"><div id="" class="text-0" data-uia="">Stranger Things</div><div id="" class="text-1" data-uia="">Téléchargement en cours...</div></div><div class="our-story-card-animation-custom" data-uia="our-story-card-custom" aria-hidden="true"></div></div></div></div><div class="center-pixel" style="position:absolute"></div></div></div>
+                <div class="faq">
+                    <h2>Foire aux questions</h2>
+                    <ul class="accordion">
+                        <li>
+                            <input type="radio" name="accordion" id="first">
+                            <label for="first">Netfloox, qu'est-ce que c'est ?</label>
+                            <div class="content">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="radio" name="accordion" id="second">
+                            <label for="second">Netfloox, qu'est-ce que c'est ?</label>
+                            <div class="content">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="radio" name="accordion" id="third">
+                            <label for="third">Netfloox, qu'est-ce que c'est ?</label>
+                            <div class="content">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="radio" name="accordion" id="fourth">
+                            <label for="fourth">Netfloox, qu'est-ce que c'est ?</label>
+                            <div class="content">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="radio" name="accordion" id="fith">
+                            <label for="fith">Netfloox, qu'est-ce que c'est ?</label>
+                            <div class="content">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
                 </body>
                 </html>
                     
