@@ -35,9 +35,13 @@ doss = param['folder']
 section = param['config_file_section']
 
 ##### Connexion bdd
-print(f"\nConnexion à {section}...", end='')
-conn = mdbcon.connect_to_db(param['connection_config_file'], section)
-print('ok', end='\n\n')
+print(f"\nConnexion à '{section}'...")
+conn = mdbcon.create_db(param['connection_config_file'], section)
+
+if conn == None:
+    quit()
+
+print('Connexion établie !', end='\n\n')
 
 ##### Boucle création des tables
 table_names = list(config['files'].keys())
@@ -58,7 +62,7 @@ for tn in table_names:
 
     nb_chunks = ceil(nb_lines / ch_size)
 
-    columns = convert_dtype(current_file['columns'])
+    column_types = convert_dtype(current_file['column_types'])
 
     with pd.read_csv(path, sep='\t', na_values=current_file['na_values'], quoting=3, low_memory=False, chunksize=ch_size) as chunk_it:
 
@@ -79,16 +83,21 @@ for tn in table_names:
 
                 df = df.explode(new_name).dropna()
 
-            df = df[list(columns.keys())]
+            df = df[list(column_types.keys())]
 
-            df.to_sql(tn, conn, dtype = columns, if_exists=if_ex, index=False)
+            df.to_sql(tn, conn, dtype = column_types, if_exists=if_ex, index=False)
 
             if_ex = 'append'
-
             n += 1
-            d = time.time() - file_time
-            d = f"{int(d):2} s" if d < 60 else f"{d:5.1} m"
+            d = time.time() - lines_time
+            d = f"{int(d)} s" if d < 60 else f"{d/60:.1f} m"
             print(f" - {n_file:2}/{len(table_names)} - {tn} : {n:5,} / {nb_chunks:,}  -  {n/nb_chunks:8.3%}  -  {d}")
+
+    conn.execute(text(f"ALTER TABLE {tn} ADD PRIMARY KEY ({','.join(current_file['primary_keys'])});"))
+
+    if 'foreign_keys' in current_file:
+        for frkey in current_file['foreign_keys']:
+            conn.execute(text(f"ALTER TABLE {tn} ADD FOREIGN KEY ({frkey}) REFERENCES {current_file['foreign_keys'][frkey]}"))
 
     d = time.time() - file_time
     m = int(d/60)
