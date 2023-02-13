@@ -9,10 +9,10 @@ from streamlit.components.v1 import html
 from PIL import Image
 st.set_page_config(layout="wide")
 
-
 with open("assets/style.css") as style:
     st.markdown(f"<style>{style.read()}</style>", unsafe_allow_html=True)
-       
+    # Define your javascript
+    
     with st.sidebar:
         tabs = on_hover_tabs(tabName=['Home','Analyse', 'Prédiction', 'Recommandations'], 
                             iconName=['home','manage_search','app_registration', 'settings_applications'], default_choice=0)
@@ -110,7 +110,7 @@ with open("assets/style.css") as style:
                             <input type="radio" name="accordion" id="first">
                             <label for="first">Netfloox, qu'est-ce que c'est ?</label>
                             <div class="content">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
+                                <p>Netfloox est un système de recommandation de contenu vidéo.<br>Le projet</p>
                             </div>
                         </li>
                         <li>
