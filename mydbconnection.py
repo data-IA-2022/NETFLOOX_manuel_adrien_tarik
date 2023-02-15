@@ -50,7 +50,7 @@ def create_db(config_file, section, ssh=False, local_port=None, ssh_section=None
     if num > 2:
         print(f"\nLa base de donnée '{config[section]['db_name']}' existe déjà.")
 
-        if not demande_bool(f"Enregistrer sous le nom '{db_name}' (y/n) ?\n", ['y', 'Y', 'yes', 'o', 'O', 'oui'], ['n', 'N', 'no', 'non']):
+        if not demande_bool(f"Enregistrer sous le nom '{db_name}' (y/n) ? ", ['y', 'Y', 'yes', 'o', 'O', 'oui'], ['n', 'N', 'no', 'non']):
 
             return None
 
@@ -59,7 +59,7 @@ def create_db(config_file, section, ssh=False, local_port=None, ssh_section=None
     engine = create_engine(url)
     create_database(url, 'utf8mb4')
 
-    return engine.connect()
+    return engine
 
 
 def connect_to_db(config_file, section, ssh=False, local_port=None, ssh_section=None):
