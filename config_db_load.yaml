@@ -1,6 +1,6 @@
 param:
 
-    chunksize:              3_000_000
+    chunksize:              5_000_000
     folder:                 'data'
 
     connection_config_file: config.yaml

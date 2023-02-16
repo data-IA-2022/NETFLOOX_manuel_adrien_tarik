@@ -4,3 +4,5 @@ pyyaml
 mysql-connector-python
 mysqlclient
 pandas
+pyodbc
+!sudo apt install unixodbc

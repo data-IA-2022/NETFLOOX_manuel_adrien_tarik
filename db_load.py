@@ -5,9 +5,9 @@ from math import ceil
 import pandas as pd
 import sqlalchemy.types as SQLAT
 import yaml
-from sqlalchemy import text, Table, Column, MetaData, ForeignKey
+from sqlalchemy import Column, ForeignKey, MetaData, Table
 
-import mydbconnection as mdbcon
+import db_connection as db_con
 
 
 def convert_dtype(types: dict) -> dict:
@@ -26,11 +26,11 @@ def convert_dtype(types: dict) -> dict:
 def calc_time(start_time):
 
     d = time.time() - start_time
-    h = int(d/3600)
+    h = int(d / 3600)
     h = f"{h} h " if d > 3600 else ''
-    m = int(d%3600/60)
+    m = int(d % 3600 / 60)
     m = f"{m} m " if d > 60 else ''
-    s = int(d%3600%60)
+    s = int(d % 3600 % 60)
     s = f"{s} s"
     return h + m + s
 
@@ -50,7 +50,7 @@ meta = MetaData()
 
 ##### Connexion bdd
 print(f"\nConnexion à '{section}'...")
-engine = mdbcon.create_db(param['connection_config_file'], section)
+engine = db_con.create_db(param['connection_config_file'], section, pyodbc=False)
 
 if engine == None:
     quit()
@@ -64,6 +64,8 @@ global_time = time.time()
 ##### Boucle création des tables
 print("Création des tables :", end='\n\n')
 
+list_references = []
+
 n_table = 0
 for table_name in table_names:
 
@@ -71,42 +73,47 @@ for table_name in table_names:
 
     table_config = config['files'][table_name]
     column_types = convert_dtype(table_config['column_types'])
-
-    cols = []
+    columns = []
 
     for column_name in column_types:
-
         if 'foreign_keys' in table_config and column_name in table_config['foreign_keys']:
 
-            cols.append(Column(
+            reference = table_config['foreign_keys'][column_name]
+
+            if reference not in list_references:
+                list_references.append(reference)
+
+            columns.append(Column(
                 column_name,
                 column_types[column_name],
-                ForeignKey(table_config['foreign_keys'][column_name]),
-                primary_key = column_name in table_config['primary_keys']
+                ForeignKey(reference),
+                primary_key= column_name in table_config['primary_keys']
             ))
-
         else:
-
-            cols.append(Column(
+            columns.append(Column(
                 column_name,
                 column_types[column_name],
-                primary_key = column_name in table_config['primary_keys']
+                primary_key= column_name in table_config['primary_keys']
             ))
 
     Table(
         table_name,
         meta,
-        *cols
+        *columns
     )
 
-    print(f" - {n_table:2}/{len(table_names)} - {table_name}")
+    print(f"{n_table:2}/{len(table_names)} - {table_name}")
+
+print("\nReferences à vérifier :", ', '.join(list_references), end='\n\n')
 
 meta.create_all(engine)
 
 conn = engine.connect()
 
 ##### Boucle remplissage des tables
-print("\nRemplissage des tables :", end='\n\n')
+print("Remplissage des tables :", end='\n\n')
+
+dict_references = {k: [] for k in list_references}
 
 n_table = 0
 for table_name in table_names:
@@ -144,6 +151,21 @@ for table_name in table_names:
 
             df = df[list(column_types.keys())]
 
+            names_references = [k for k in dict_references.keys() if k.split('.')[0] == table_name]
+
+            if names_references:
+                for name_reference in names_references:
+                    dict_references[name_reference] += df[name_reference.split('.')[1]].tolist()
+
+            if 'foreign_keys' in table_config:
+                for column_name in table_config['foreign_keys']:
+
+                    ok = df[column_name].isin(dict_references[table_config['foreign_keys'][column_name]])
+
+                    df[~ok].to_sql(table_name + '_echecs', conn, dtype = column_types, if_exists='append', index=False)
+
+                    df = df[ok]
+
             df.to_sql(table_name, conn, dtype = column_types, if_exists='append', index=False)
 
             n += 1
@@ -151,7 +173,7 @@ for table_name in table_names:
 
     print(f" ----- {calc_time(table_time)}", end='\n\n')
 
-# Commit pour être sûr
+##### Commit pour être sûr
 conn.commit()
 
 print("Temps total :", calc_time(global_time))
