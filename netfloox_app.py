@@ -7,6 +7,11 @@ from streamlit_extras.badges import badge
 from st_on_hover_tabs import on_hover_tabs
 from streamlit.components.v1 import html
 from PIL import Image
+import recommandation_page
+import mydbconnection as mdbcon
+import pandas as pd
+from sqlalchemy import text
+
 st.set_page_config(layout="wide")
 
 with open("assets/style.css") as style:
@@ -20,7 +25,6 @@ with open("assets/style.css") as style:
 
     if tabs =='Home':
         context_projet_html_string = f'''
-                
                 <body>
                 <div class="header">
                     <div class="mobile-plan-banner -container">
@@ -107,36 +111,22 @@ with open("assets/style.css") as style:
                     <h2>Foire aux questions</h2>
                     <ul class="accordion">
                         <li>
-                            <input type="radio" name="accordion" id="first">
+                            <input type="radio" name="accordion" class="faq_input" id="first">
                             <label for="first">Netfloox, qu'est-ce que c'est ?</label>
                             <div class="content">
-                                <p>Netfloox est un système de recommandation de contenu vidéo.<br>Le projet</p>
+                                <p>Netfloox est un système de recommandation de contenu vidéo.<br>Le projet s'articule autour de plusieurs axes:<br><br>1.  Analyse des données récupérées de fichiers tsv issue de la base IMDB.<br><br>2.  Processing des données.<br><br>3.  Création d'un modèle de base de données relationnel.<br><br>4. Création de deux modèles de machine learning:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.   Un modèle de Prédiction de popularité<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Un modèle pour recommender des films simmilaires.<br><br>5. Une application web pour que les utilisateurs interagissent avec la base et visualisent les recommendations en fonction de leurs inputs. </p>
                             </div>
                         </li>
                         <li>
-                            <input type="radio" name="accordion" id="second">
+                            <input type="radio" name="accordion" class="faq_input" id="second">
                             <label for="second">Netfloox, qu'est-ce que c'est ?</label>
                             <div class="content">
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
                             </div>
                         </li>
                         <li>
-                            <input type="radio" name="accordion" id="third">
+                            <input type="radio" name="accordion" class="faq_input" id="third">
                             <label for="third">Netfloox, qu'est-ce que c'est ?</label>
-                            <div class="content">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <input type="radio" name="accordion" id="fourth">
-                            <label for="fourth">Netfloox, qu'est-ce que c'est ?</label>
-                            <div class="content">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <input type="radio" name="accordion" id="fith">
-                            <label for="fith">Netfloox, qu'est-ce que c'est ?</label>
                             <div class="content">
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit cumque odio, totam eum culpa, laudantium nobis illo dolorem recusandae tempore vel animi, cupiditate impedit perferendis ratione aliquid numquam fugit temporibus.</p>
                             </div>
@@ -148,6 +138,7 @@ with open("assets/style.css") as style:
                     
                 
                 '''
+        
         st.markdown(context_projet_html_string, unsafe_allow_html=True)
         badge(type="github", name="data-IA-2022/NETFLOOX_manuel_adrien_tarik")
 
@@ -162,6 +153,10 @@ with open("assets/style.css") as style:
     elif tabs == 'Recommandations':
         st.title("Recommandations de film selon vos préférences")
         st.write('Name of option is {}'.format(tabs))
+        recommandation_page.reco_page(style)
+        
+        
+        
 
     
     

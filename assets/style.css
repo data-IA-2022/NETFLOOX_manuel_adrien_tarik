@@ -471,7 +471,7 @@ our-story-card animation-card.kidsValueProp{
   position: relative;
 }
 
-label::after{
+.accordion li label::after{
   content: '+';
   font-size: 34px;
   position: absolute;
@@ -498,7 +498,7 @@ input[type="radio"]{
 }
 
 /* to close */
-.accordion input[type="radio"]:checked + label::after{
+.accordion.faq_input input[type="radio"]:checked + label::after{
   transform: rotate(-45deg);
 }
 
@@ -609,5 +609,23 @@ button[kind="header"] {
 }
 
 
+/* ---------------------------------------- Recommandation page --------------------------------- */
 
+.css-k1ih3n {
+  width: 100%;
+  padding: 0rem 0rem 10rem;
+  min-width: auto;
+  max-width: initial;
+  display: flex!important;
+  align-items: center!important;
+}
+
+.css-1p05t8e {
+  border: 1px solid rgba(250, 250, 250, 0.2);
+  border-radius: 0.25rem;
+  padding: calc(1em - 1px);
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
