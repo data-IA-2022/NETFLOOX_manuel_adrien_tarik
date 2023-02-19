@@ -8,6 +8,10 @@ Created on Fri Feb 17 20:23:06 2023
 import matplotlib.pyplot as plt
 import numpy as np
 from df_loading import datasets as dts
+import plotly.express as px
+import seaborn as sns ; sns.set()
+from scipy.stats import chi2_contingency
+import pandas as pd
 
 def Répartition_flms_sans_notes(table):
     # les données à afficher dans le camembert
@@ -109,8 +113,7 @@ def Correspondance_Notes_Nombre_Votes_Decennies(table):
         ax.annotate(txt, (avg_rating[i], avg_num_votes[i]), textcoords='offset points', xytext=(0, 8), ha='center')
     
     plt.show()
-    
-    
+      
 def Correspondance_Notes_Nombre_Votes_Annee(table, log=False, with_limit=False):
     
     dts =table.sample(frac=1, random_state=42)
@@ -211,8 +214,53 @@ def Part_films_difusion_par_regions(table):
     # Affichage du camembert
     plt.show()
     
-    # region1 = table['region'][:2]
+def Diagrame_3D_numeric_dimentions(table):  
     
+    fig = px.scatter_3d(table, x='averageRating', y='numVotes', z='runtimeMinutes', color='startYear',  color_continuous_scale='viridis')
+    fig.update_layout(scene_zaxis_type="log")
+    fig.show(renderer='browser')
+    
+def Correlation_numeric_dimentions(table):  
+    
+    fig1, ax1 = plt.subplots()
+    sns.heatmap(table.corr(), annot=True, linewidths=0.5)
+    plt.show()
+   
+def Correlation_Categorielle_dimentions(table, nb_echantillons = 100):
+
+    table=table[:nb_echantillons].drop('tconst', axis=1).sample(frac=1).reset_index(drop=True)
+    cat_cols = table.select_dtypes(include=['object']).columns
+
+    # Créer une matrice de zéros de la taille (nb de colonnes catégorielles) x (nb de colonnes catégorielles)
+    corr_matrix = np.zeros((len(cat_cols), len(cat_cols)))
+
+    # Remplir la matrice avec les valeurs de Cramer's V
+    for i, col1 in enumerate(cat_cols):
+        for j, col2 in enumerate(cat_cols):
+            if i == j:
+                corr_matrix[i,j] = 1.0
+            else:
+                contingency_table = pd.crosstab(table[col1], table[col2])
+                chi2, p, dof, expected = chi2_contingency(contingency_table)
+                n = contingency_table.sum().sum()
+                phi2 = chi2 / n
+                r, k = contingency_table.shape
+                phi2corr = max(0, phi2 - ((k-1)*(r-1))/(n-1))
+                rcorr = r - ((r-1)**2)/(n-1)
+                kcorr = k - ((k-1)**2)/(n-1)
+                corr_matrix[i,j] = np.sqrt(phi2corr / min((kcorr-1), (rcorr-1)))
+
+    # Convertir la matrice en un DataFrame et ajouter les noms des colonnes
+    corr_df = pd.DataFrame(corr_matrix, columns=cat_cols, index=cat_cols)
+
+    fig1, ax1 = plt.subplots()
+    sns.heatmap(corr_df, annot=True, linewidths=0.5)
+    
+    # Ajout d'un titre
+    plt.title("Corrélation chi2 {} echantillons".format(nb_echantillons), fontsize=14)
+    
+    plt.show()
+   
 Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])    
 Nombre_films_difusés_par_regions(dts['analyses']['region_diffusion_films'])  
 Correspondance_Notes_Nombre_Votes_Decennies(dts['analyses']['decenie_votes_rating'])
@@ -227,3 +275,14 @@ Répartition_items_par_types(dts['analyses']['types'][1:-1], True)
 Répartition_flms_sans_notes(dts['analyses']['prop_notes_null'])
 Part_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])
 Part_films_difusion_par_regions(dts['analyses']['region_diffusion_films'])
+Diagrame_3D_numeric_dimentions(dts['tables']['films'])
+Correlation_numeric_dimentions(dts['tables']['films'])
+Correlation_Categorielle_dimentions(dts['tables']['films'])
+Correlation_Categorielle_dimentions(dts['tables']['films'],1000)
+Correlation_Categorielle_dimentions(dts['tables']['films'],5000)
+Correlation_Categorielle_dimentions(dts['tables']['films'],10000)
+
+
+
+
+
