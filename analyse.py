@@ -98,6 +98,7 @@ def Correspondance_Notes_Nombre_Votes_Decennies(table):
     
     # Création du plot
     fig, ax = plt.subplots()
+    ax.set_ylim([1, 13000])
     sc = ax.scatter(avg_rating, avg_num_votes, c=annee, cmap='viridis')
     ax.set_xlabel('Note moyenne sur tous les films')
     ax.set_ylabel('Nombre de votes moyens sur tous les films')
@@ -107,6 +108,30 @@ def Correspondance_Notes_Nombre_Votes_Decennies(table):
     for i, txt in enumerate(annee):
         ax.annotate(txt, (avg_rating[i], avg_num_votes[i]), textcoords='offset points', xytext=(0, 8), ha='center')
     
+    plt.show()
+    
+    
+def Correspondance_Notes_Nombre_Votes_Annee(table, log=False, with_limit=False):
+    
+    dts =table.sample(frac=1, random_state=42)
+
+    annee = dts['startYear']
+    avg_rating = dts['averageRating']
+    avg_num_votes = dts['numVotes']
+
+    # Création du plot
+    fig, ax = plt.subplots()
+    sc = ax.scatter(avg_rating, avg_num_votes, c=annee, cmap='viridis')
+    ax.set_xlabel('Note')
+    ax.set_ylabel('Nombre')
+    
+    if log:
+        ax.set_yscale('log')
+    
+    if with_limit:
+        ax.set_ylim([1, 13000])
+    
+    fig.colorbar(sc, label='Annee')
     plt.show()
     
 def Nombre_films_difusés_par_regions(table):    
@@ -188,11 +213,14 @@ def Part_films_difusion_par_regions(table):
     
     # region1 = table['region'][:2]
     
-
-
 Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])    
 Nombre_films_difusés_par_regions(dts['analyses']['region_diffusion_films'])  
 Correspondance_Notes_Nombre_Votes_Decennies(dts['analyses']['decenie_votes_rating'])
+Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'])
+Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], False, True)
+Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], True)
+Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42), True)
+Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42))
 Répartition_notes_2_films(dts['analyses']['notes'])  
 Répartition_items_par_types(dts['analyses']['types'])  
 Répartition_items_par_types(dts['analyses']['types'][1:-1], True)  
