@@ -4,7 +4,7 @@ param:
     folder:                 'data'
 
     connection_config_file: config.yaml
-    config_file_section:    local
+    config_file_section:    mysql_azure_netfloox
 
 files:
 
