@@ -2,12 +2,12 @@
 import pandas as pd
 import numpy as np
 import sys
+import time
 sys.path.append('/content/NETFLOOX_manuel_adrien_tarik')
 from os.path import exists
 from sqlalchemy import text
 import pickle
 import mydbconnection as mdbcon #pour connection à la bdd
-
 
 # Graphiques
 import seaborn as sns ; sns.set()
@@ -34,8 +34,6 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 # Machine learning - Métriques d'erreur
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay, f1_score, fbeta_score, r2_score
 
-
-
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import LabelEncoder, RobustScaler
@@ -50,7 +48,8 @@ def create_df_for_dataset():
         conn = mdbcon.connect_to_db("config.yaml", "mysql_azure_netfloox")
     except ValueError:
         print("Could not connect to database.")
-    
+        quit()
+
     # création des dfs
     # SQL query pour récupérer les donnéés qui vont bien et les mettres dans nos df 
     query = text("""
@@ -63,7 +62,6 @@ def create_df_for_dataset():
     print(df.head(3))
     # pivot table pour tout rapporter à la maille film selection des colonnes nécéssaires
     df_subset_for_pivot = df[["tconst","primaryName","category"]]#.query('category in ("actor","actress","director","composer")')
-    
 
     #le pivot
     principals = pd.pivot_table(df_subset_for_pivot, index=['tconst'], values='primaryName',columns= 'category',
@@ -87,8 +85,6 @@ def create_df_for_dataset():
     return df_prediction
 
 
-
-
 def get_dataset():
     filename = "modeles/dataset_prédiction.pickle"
 
@@ -98,18 +94,11 @@ def get_dataset():
         dataset =  pickle.load(open(filename, 'rb'))
     return dataset
 
-dataset = get_dataset().sample(5000)
-print(dataset.columns)
-print(dataset.shape)
-print(dataset.isna().sum())
-print(dataset.head(3))
 
 def get_features_target(dataset):
     y = dataset['averageRating']
     X = dataset.drop(columns=['averageRating'])
     return X, y
-
-X, y = get_features_target(dataset)
 
 
 def get_pipeline_preparation(X):
@@ -139,8 +128,6 @@ def get_pipeline_preparation(X):
     #
     return preparation
 
-prepa = get_pipeline_preparation(X)
-model = RandomForestRegressor()
 
 def get_pipeline_model(prepa, model):
     pipeline = Pipeline([('preparation', prepa),
@@ -148,19 +135,14 @@ def get_pipeline_model(prepa, model):
      ('model',model)])
     return pipeline
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
-
-pipe_model = get_pipeline_model(prepa, model)
-pipe_model
-# pipe_model.fit(X_train, y_train)
 
 def grid_search(pipeline, X, y):
     param_grid = [
         {
             'model': [RandomForestRegressor()],
-            'model__n_estimators': range(100, 401, 100),
-            'model__max_depth': [5, 10],
-            'pca__n_components': [30],
+            'model__n_estimators': range(100, 701, 50),
+            'model__max_depth': range(3, 15),
+            'pca__n_components': range(10, 51, 10),
         }#,
         # {
         #     'model': [KNeighborsRegressor()],
@@ -169,22 +151,50 @@ def grid_search(pipeline, X, y):
         #     'pca__n_components': [10, 20, 30],
         # }
     ]
-    grid_search = GridSearchCV(pipeline, param_grid, cv=5, verbose= 2)
+    grid_search = GridSearchCV(pipeline, param_grid, cv=5, verbose= 3)
     grid_search.fit(X, y)
-    best_params = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    return best_params, best_model
-
-pipeline = get_pipeline_model(prepa, model)
-print(pipeline)
-best_params, best_model = grid_search(pipeline, X, y)
-print(best_params, best_model)
-
-y_pred = pipe_model.predict(X_test)
-score = r2_score(y_test, y_pred)
-print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
+    return grid_search
 
 
+def main():
+
+    start_time = time.time()
+
+    dataset = get_dataset()
+    print(dataset.columns)
+    print(dataset.shape)
+    print(dataset.isna().sum())
+    print(dataset.head(3))
+
+    X, y = get_features_target(dataset)
+
+    prepa = get_pipeline_preparation(X)
+    model = RandomForestRegressor()
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
+
+    #pipe_model = get_pipeline_model(prepa, model)
+    # pipe_model.fit(X_train, y_train)
+
+    pipe_model = get_pipeline_model(prepa, model)
+    print(pipe_model)
+    gridS = grid_search(pipe_model, X, y)
+    print(gridS.best_params_, gridS.best_estimator_)
+
+    pickle.dump(gridS, open('modeles/gridS.model', 'wb'))
+
+    y_pred = gridS.predict(X_test)
+    score = r2_score(y_test, y_pred)
+    print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
+
+    d = time.time() - start_time
+    h = f"{int(d/3600):3} h"
+    d %= 3600
+    m = f"{int(d/60):02} m"
+    s = f"{int(d%60):02}"
+
+    print("Temps total :", h, m, s)
 
 
-
+if __name__ == '__main__':
+    main()
