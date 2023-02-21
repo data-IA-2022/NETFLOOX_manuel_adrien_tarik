@@ -6,6 +6,9 @@ import pandas as pd
 import mydbconnection as mdbcon
 from sqlalchemy import text
 
+from streamlit.components.v1.components import ComponentRegistry
+from streamlit.components.v1 import declare_component
+
 def reco_page(style):
     conn = mdbcon.connect_to_db("config.yaml", "mysql_azure_netfloox")
     selected_option = ""
@@ -48,6 +51,7 @@ def reco_page(style):
 
         if submit_button:
             st.write('You selected:', option)
+
         
         # html(reco_page_html)
         
