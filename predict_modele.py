@@ -98,7 +98,7 @@ def get_dataset():
         dataset =  pickle.load(open(filename, 'rb'))
     return dataset
 
-dataset = get_dataset()
+dataset = get_dataset().sample(5000)
 print(dataset.columns)
 print(dataset.shape)
 print(dataset.isna().sum())
@@ -121,7 +121,7 @@ def get_pipeline_preparation(X):
     #Pas d'imputation içi remplacer les éléments manquants par des acteurs non présents dans les films non renseignés n'a aucun intérêt.
     transfo_cat = Pipeline(steps=[
         #('bow', CountVectorizer())
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = True))
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = False))
     ])
     # Je choisi içi un robustScaler a cause de la colonne runtimeMinutes qui dispose d'outliers 1min à des milliers de min
     transfo_num = Pipeline(steps=[
@@ -158,18 +158,18 @@ def grid_search(pipeline, X, y):
     param_grid = [
         {
             'model': [RandomForestRegressor()],
-            'model__n_estimators': [50, 100, 200],
-            'model__max_depth': [5, 10, None],
-            'pca__n_components': [10, 20, 30],
-        },
-        {
-            'model': [KNeighborsRegressor()],
-            'model__n_neighbors': [3, 5, 7],
-            'model__weights': ['uniform', 'distance'],
-            'pca__n_components': [10, 20, 30],
-        }
+            'model__n_estimators': range(100, 401, 100),
+            'model__max_depth': [5, 10],
+            'pca__n_components': [30],
+        }#,
+        # {
+        #     'model': [KNeighborsRegressor()],
+        #     'model__n_neighbors': [3, 5, 7],
+        #     'model__weights': ['uniform', 'distance'],
+        #     'pca__n_components': [10, 20, 30],
+        # }
     ]
-    grid_search = GridSearchCV(pipeline, param_grid, cv=5)
+    grid_search = GridSearchCV(pipeline, param_grid, cv=5, verbose= 2)
     grid_search.fit(X, y)
     best_params = grid_search.best_params_
     best_model = grid_search.best_estimator_
@@ -180,6 +180,9 @@ print(pipeline)
 best_params, best_model = grid_search(pipeline, X, y)
 print(best_params, best_model)
 
+y_pred = pipe_model.predict(X_test)
+score = r2_score(y_test, y_pred)
+print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
 
 
 
