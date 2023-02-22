@@ -1,6 +1,9 @@
 import pandas as pd
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import RobustScaler, MinMaxScaler
 from sqlalchemy import text
 
 import db_connection as db_con
@@ -22,25 +25,19 @@ def calc_time(start_time):
     return h + m + s
 
 
-path_df = "data/table_films_2.df"
+def dl_data_from_db(list_columns, table, where, verbose):
 
-list_columns = ['tconst', 'titleType', 'originalTitle', 'runtimeMinutes', 'isAdult', 'startYear', 'genres', 'nconst_director', 'nconst_writer', 'averageRating', 'numVotes', 'nconst_staf', 'category', 'characters']
-table = 'table_films_2'
+    sql = text(f"SELECT {', '.join(list_columns)} FROM {table} {where}")
 
-where = "WHERE category NOT IN ('director', 'writer')"
-
-sql = text(f"SELECT {', '.join(list_columns)} FROM {table} {where}")
-
-print(f"load {path_df}")
-start_time = time.time()
-
-if not exists(path_df):
-
-    print(f"{path_df} n'existe pas\n-> création... ", end='')
     conn = db_con.connect_to_db('config.yaml', 'mysql_azure_netfloox')
 
+    if verbose: print("-> requête sql... ", end='')
+
     nombre_lines = conn.execute(text(f"SELECT COUNT(*) FROM {table} {where}")).scalar()
-    print(f"{nombre_lines:,} lignes", end='\n\n')
+
+    if verbose:
+        print(f"{nombre_lines:,} lignes", end='\n\n')
+        start_time = time.time()
 
     dfs = []
     chunksize = 1_000_000
@@ -49,60 +46,166 @@ if not exists(path_df):
     n = 0
     for chunk in pd.read_sql(sql, conn, chunksize=chunksize):
 
-        chunk_time = time.time()
         n += 1
         dfs.append(chunk)
 
-        print(f"{n:3} / {n_chunks} - {n/n_chunks:8.3%} - {calc_time(chunk_time)}")
+        if verbose: print(f"{n:3} / {n_chunks} - {n/n_chunks:8.3%}")
 
-    print("\nConcaténation...", end='')
+    conn.close()
+    
+    if verbose:
+        print('\n', calc_time(start_time))
+
+        print("\nConcaténation... ", end='')
+        start_time = time.time()
+
     df = pd.concat(dfs)
-    print('ok', end='\n\n')
 
-    pickle.dump(df, open(path_df, 'wb'))
+    if verbose: print('ok\n', calc_time(start_time), end='\n\n')
 
-else:
+    return df
 
-    df = pickle.load(open(path_df, 'rb'))
 
-print('-----', calc_time(start_time), end='\n\n')
+def get_data(path_file, verbose = False):
 
-df_piv = pd.pivot_table(df, index=['tconst'], values='nconst_staf',columns= 'category', aggfunc=','.join)
+    if verbose:
+        print(f"\nRécupération de {path_file}")
+        global_time = time.time()
 
-print(df.columns)
-print(df_piv.columns)
+    if not exists(path_file):
 
-quit()
+        if verbose: print(f"\n{path_file} n'existe pas\n\nRécupération depuis la base de données")
 
-#Ajout du ratting et numVote
-recommendation = df_recommendation.drop(columns = ['originalTitle'])
-recommendation['reco_vector'] = recommendation.iloc[:, 1:].apply(' '.join, axis=1)
+        list_columns = ['tconst', 'originalTitle', 'runtimeMinutes', 'isAdult', 'startYear', 'genres', 'averageRating', 'numVotes', 'nconst_staf', 'category']
+        table = 'table_films_2'
+        where = ""
 
-#on ajoute le nom du film
-recommendation = recommendation.join(df_recommendation['originalTitle'])
-recommendation = recommendation[['tconst', 'reco_vector', 'originalTitle']]
+        df = dl_data_from_db(list_columns, table, where, verbose)
 
-df.drop(columns=['tconst', 'originalTitle'])
+        if verbose:
+            print("Pivot... ", end='')
+            start_time = time.time()
 
-#fonction qui retrouve le titre du film en fonction de l'index
-find_title_from_index = lambda index: recommendation[recommendation.index == index]["originalTitle"].values[0]
+        df = pd.pivot_table(df, index=list_columns[:-2], values='nconst_staf', columns='category', aggfunc=lambda x: ','.join(x.unique())).reset_index()
 
-#fonction qui retrouve l'index du film en fonction du titre
-find_index_from_title = lambda title: recommendation[recommendation.originalTitle == title].index.values[0]
+        if verbose: print('ok\n', calc_time(start_time), end='\n\n')
 
-movie = "Star Wars: Episode I - The Phantom Menace"
-movie_index = find_index_from_title(movie)
+        for c in df.select_dtypes(include='object').columns:
 
-# Déclaration de la méthode de vectorisation et application
-cv = CountVectorizer()
-count_matrix = cv.fit_transform(recommendation['reco_vector'])
+            df[c] = df[c].fillna('')
 
-count_matrix[movie_index]
+        for c in df.select_dtypes(exclude='object').columns:
 
-# Calcul des similarités uniquement pour le film en question pour limiter la taille de la matrice
-cosine_sim = cosine_similarity(count_matrix, Y= count_matrix[movie_index])
+            df[c] = df[c].fillna(0)
 
-sorted_similar_movies = sorted(list(enumerate(cosine_sim)), key=lambda x:x[1], reverse=True)[1:6]
+        df_noms = df[['tconst', 'originalTitle']]
 
-for id_film, score in sorted_similar_movies:
-    print(score, find_title_from_index(id_film))
+        df.drop(columns='tconst', inplace=True)
+
+        columns_CountV = df.select_dtypes(include='object')
+
+        columns_pass   = ['isAdult', 'averageRating']
+        columns_MinMax = ['startYear']
+        columns_Robust = ['runtimeMinutes', 'numVotes']
+
+        transformers = [
+            ('col_runtime', RobustScaler(), columns_Robust),
+            ('col_pass', 'passthrough', columns_pass),
+            ('col_year', MinMaxScaler(), columns_MinMax),
+        ] + [('col_' + cc, CountVectorizer(), cc) for cc in columns_CountV]
+
+        preparation = ColumnTransformer(transformers)
+
+        if verbose:
+            print("Preparation des données... ", end='')
+            start_time = time.time()
+
+        df_prep = preparation.fit_transform(df)
+
+        if verbose: print('ok\n', calc_time(start_time), end='\n\n')
+
+        pickle.dump((df_noms, df_prep), open(path_file, 'wb'))
+
+    else:
+
+        df_noms, df_prep = pickle.load(open(path_file, 'rb'))
+
+    if verbose: print('Création / Récupération des datas : ', calc_time(global_time), end='\n\n')
+    return df_noms, df_prep
+
+
+def get_index(value, array):
+
+    return array[array == value].index[0]
+
+
+def get_best(list_, num):
+
+    if len(list_) <= num:
+
+        return sorted(list_, key=lambda x:x[1], reverse=True)
+
+    mid = len(list_)//2
+    list_ = get_best(list_[:mid], num) + get_best(list_[mid:], num)
+
+    return sorted(list_, key=lambda x:x[1], reverse=True)[:num]
+
+
+class Model_reco:
+
+
+    def __init__(
+        self,
+        path_file = "data/data_recommandation.data",
+        verbose   = False
+    ):
+
+        self.path_file = path_file
+        self.verbose   = verbose
+
+        self.noms_films, self.data_prep = get_data(path_file, verbose)
+
+
+    def get_reco(self, value, best_of : int, by = 'originalTitle'):
+
+        index_y = get_index(value, self.noms_films[by])
+
+        if self.verbose:
+            print("Calcul des similaritées... ", end='')
+            start_time = time.time()
+
+        list_sim = cosine_similarity(self.data_prep, Y=self.data_prep[index_y])
+
+        if self.verbose:
+            print('ok\n', calc_time(start_time), end='\n\n')
+
+            print("Trie... ", end='')
+            start_time = time.time()
+
+        list_sim = get_best(list(enumerate(list_sim)), best_of)
+
+        if self.verbose:
+            print('ok\n', calc_time(start_time), end='\n\n')
+
+        df = pd.DataFrame()
+
+        list_index, list_score = zip(*list_sim)
+
+        df['score']         = [s.item(0) for s in list_score]
+        df['tconst']        = [self.noms_films['tconst'][id] for id in list_index]
+        df['originalTitle'] = [self.noms_films['originalTitle'][id] for id in list_index]
+
+        return df
+
+
+def main():
+
+    model = Model_reco(verbose=True)
+
+    df = model.get_reco('Bombies', 11)
+
+    print(df)
+
+
+if __name__ == '__main__':
+    main()
