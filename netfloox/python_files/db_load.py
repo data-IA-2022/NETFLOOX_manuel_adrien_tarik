@@ -1,5 +1,6 @@
 import gzip
 import time
+import os
 from math import ceil
 
 import pandas as pd
@@ -36,7 +37,8 @@ def calc_time(start_time):
 
 
 ##### Chargement des configs
-config = yaml.safe_load(open("config_db_load.yaml", 'r'))
+path_config = os.path.join(os.path.dirname(__file__), 'config_db_load.yaml')
+config = yaml.safe_load(open(path_config, 'r'))
 
 param = config['param']
 
@@ -50,7 +52,8 @@ meta = MetaData()
 
 ##### Connexion bdd
 print(f"\nConnexion à '{section}'...")
-engine = db_con.create_db(param['connection_config_file'], section, pyodbc=False)
+path_config = os.path.join(os.path.dirname(__file__), param['connection_config_file'])
+engine = db_con.create_db(path_config, section, pyodbc=False)
 
 if engine == None:
     quit()
@@ -122,7 +125,7 @@ for table_name in table_names:
     table_time = time.time()
 
     table_config = config['files'][table_name]
-    path = f"{doss}/{table_config['name_file']}"
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), doss, table_config['name_file'])
 
     print(f"{n_table:2}/{len(table_names)} - {table_name} - nombre de lines : ", end='')
     nb_lines = sum(1 for _ in gzip.open(path)) - 1

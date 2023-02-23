@@ -1,12 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 17 20:23:06 2023
-@author: Utilisateur
-"""
-
 import matplotlib.pyplot as plt
 import numpy as np
-from df_loading import datasets as dts
 import plotly.express as px
 import seaborn as sns ; sns.set()
 from scipy.stats import chi2_contingency
@@ -176,9 +169,9 @@ def Nombre_films_produits_par_regions(table):
     ax.invert_yaxis()  # Inverse l'ordre des éléments sur l'axe Y
     ax.set_xlabel('Nombre de films')
     ax.set_title('Nombre de films produits par regions')
-    res = plt
-    return res   
-  
+    
+    plt    
+    
 def Part_films_produits_par_regions(table):  
     
     labels = ['US-GB', 'Reste du monde'] 
@@ -217,7 +210,7 @@ def Diagrame_3D_numeric_dimentions(table):
     
     fig = px.scatter_3d(table, x='averageRating', y='numVotes', z='runtimeMinutes', color='startYear',  color_continuous_scale='viridis')
     fig.update_layout(scene_zaxis_type="log")
-    return fig #.show(renderer='html')
+    fig.show(renderer='browser')
     
 def Correlation_numeric_dimentions(table):  
     
@@ -260,8 +253,10 @@ def Correlation_Categorielle_dimentions(table, nb_echantillons = 100):
     
     plt.show()
 
-if __name__=='__main__':
 
+if __name__ =='__main__':
+
+    from .df_loading import datasets as dts
     Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])    
     Nombre_films_difusés_par_regions(dts['analyses']['region_diffusion_films'])  
     Correspondance_Notes_Nombre_Votes_Decennies(dts['analyses']['decenie_votes_rating'])
@@ -282,4 +277,3 @@ if __name__=='__main__':
     Correlation_Categorielle_dimentions(dts['tables']['films'],1000)
     Correlation_Categorielle_dimentions(dts['tables']['films'],5000)
     Correlation_Categorielle_dimentions(dts['tables']['films'],10000)
-

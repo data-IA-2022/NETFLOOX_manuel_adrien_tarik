@@ -6,8 +6,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler, MinMaxScaler
 from sqlalchemy import text
 
-import db_connection as db_con
-from os.path import exists
+from . import db_connection as db_con
+from os.path import exists, join, dirname, basename
 import pickle
 from math import ceil
 import time
@@ -29,7 +29,8 @@ def dl_data_from_db(list_columns, table, where, verbose):
 
     sql = text(f"SELECT {', '.join(list_columns)} FROM {table} {where}")
 
-    conn = db_con.connect_to_db('config.yaml', 'mysql_azure_netfloox')
+    path_config = join(dirname(__file__), 'config.yaml')
+    conn = db_con.connect_to_db(path_config, "mysql_azure_netfloox")
 
     if verbose: print("-> requête sql... ", end='')
 
@@ -69,12 +70,12 @@ def dl_data_from_db(list_columns, table, where, verbose):
 def get_data(path_file, verbose = False):
 
     if verbose:
-        print(f"\nRécupération de {path_file}")
+        print(f"\nRécupération de {basename(path_file)}")
         global_time = time.time()
 
     if not exists(path_file):
 
-        if verbose: print(f"\n{path_file} n'existe pas\n\nRécupération depuis la base de données")
+        if verbose: print(f"\n{basename(path_file)} n'existe pas\n\nRécupération depuis la base de données")
 
         list_columns = ['tconst', 'originalTitle', 'runtimeMinutes', 'isAdult', 'startYear', 'genres', 'averageRating', 'numVotes', 'nconst_staf', 'category']
         table = 'table_films_2'
@@ -156,7 +157,7 @@ class Model_reco:
 
     def __init__(
         self,
-        path_file = "data/data_recommandation.data",
+        path_file = join(dirname(dirname(__file__)), 'data', 'data_recommandation.data'),
         verbose   = False
     ):
 

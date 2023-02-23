@@ -1,13 +1,11 @@
 # Import et traitement des données
 import pandas as pd
 import numpy as np
-import sys
 import time
-sys.path.append('/content/NETFLOOX_manuel_adrien_tarik')
-from os.path import exists
+from os.path import exists, join, dirname
 from sqlalchemy import text
 import pickle
-import db_connection as db_con #pour connection à la bdd
+import python_files.db_connection as db_con #pour connection à la bdd
 
 # Graphiques
 import seaborn as sns ; sns.set()
@@ -42,10 +40,14 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
 
-def create_df_for_dataset():
+def create_df_for_dataset(path):
+
+    doss_py = dirname(__file__)
+
     #connection à la base
     try: 
-        conn = db_con.connect_to_db("config.yaml", "mysql_azure_netfloox")
+        path_config = join(doss_py, 'config.yaml')
+        conn = db_con.connect_to_db(path_config, "mysql_azure_netfloox")
     except ValueError:
         print("Could not connect to database.")
         quit()
@@ -80,18 +82,18 @@ def create_df_for_dataset():
     df_prediction.drop(columns=['tconst'],inplace=True)
 
     # Save the Dataset prédiction in a serialized format
-    df_prediction.to_pickle('modeles/dataset_prédiction.pickle')
+    df_prediction.to_pickle(path)
 
     return df_prediction
 
 
 def get_dataset():
-    filename = "data/dataset_prédiction.pickle"
+    path = join(dirname(dirname(__file__)), 'data', 'dataset_prédiction.pickle')
 
-    if not exists(filename):
-        dataset = create_df_for_dataset()
+    if not exists(path):
+        dataset = create_df_for_dataset(path)
     else:
-        dataset =  pickle.load(open(filename, 'rb'))
+        dataset =  pickle.load(open(path, 'rb'))
     return dataset
 
 
@@ -132,7 +134,7 @@ def get_pipeline_preparation(X):
 
 def get_pipeline_model(prepa, model):
     pipeline = Pipeline([('preparation', prepa),
-    # ('pca',PCA()),
+    #('pca',PCA()),
      ('model',model)])
     return pipeline
 
@@ -160,7 +162,7 @@ def grid_search(pipeline, X, y):
 def main():
 
     start_time = time.time()
-    print("début du prog")
+
     dataset = get_dataset()
     print(dataset.columns)
     print(dataset.shape)
@@ -170,7 +172,7 @@ def main():
     X, y = get_features_target(dataset)
 
     prepa = get_pipeline_preparation(X)
-    model = RandomForestRegressor(n_estimators = 400, max_depth = 10, verbose = 2)
+    model = RandomForestRegressor()
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
 
@@ -179,14 +181,13 @@ def main():
 
     pipe_model = get_pipeline_model(prepa, model)
     print(pipe_model)
-    pipe_model.fit(X, y)
-    # gridS = grid_search(pipe_model, X, y)
-    # print(gridS.best_params_, gridS.best_estimator_)
+    gridS = grid_search(pipe_model, X, y)
+    print(gridS.best_params_, gridS.best_estimator_)
 
-    pickle.dump(pipe_model, open('modeles/predictionRfr.model', 'wb'))
+    path = join(dirname(dirname(__file__)), 'modeles', 'gridS.model')
+    pickle.dump(gridS, open(path, 'wb'))
 
-    y_pred = pipe_model.predict(X_test)
-    print(X_test)
+    y_pred = gridS.predict(X_test)
     score = r2_score(y_test, y_pred)
     print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
 

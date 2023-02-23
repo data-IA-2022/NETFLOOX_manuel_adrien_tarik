@@ -6,26 +6,32 @@ import sys
 sys.path.append('../')
 from .models import TableRegionDiffusionAvgRatingVotesFilms #TableListFilms
 from django.http import JsonResponse
+from python_files.analyse import Nombre_films_produits_par_regions
+from python_files.model_recommandation import Model_reco
 from analyse import Diagrame_3D_numeric_dimentions #Nombre_films_produits_par_regions
 from df_loading import datasets as dts
 from plotly.offline import plot
 
 
-
-
 def base(request):
+
     return render(request, "base.html")
 
+
 def home(request):
+
     return render(request, 'home.html')
 
+
 def analyse(request):
+
     fig = Diagrame_3D_numeric_dimentions(dts['tables']['films'])
     graph = plot(fig, output_type="div")
     return render(request, 'analyse.html', context={"graphique" : graph})
 
 
 def prediction(request):
+
     if request.method == 'POST':
         original_title = request.POST.get('originalTitle')
         runtime_minutes = request.POST.get('runtimeMinutes', None)
@@ -36,9 +42,11 @@ def prediction(request):
         actress = request.POST.get('actress', '')
         composer = request.POST.get('composer', '')
         director = request.POST.get('director', '')
+
         if not original_title:
             error_message = 'You must enter an original title.'
             return render(request, 'prediction.html', {'error_message': error_message})
+
         # do something with the input data
         df = pd.DataFrame({'originalTitle': original_title,
                             'runtimeMinutes' : runtime_minutes,
@@ -49,60 +57,67 @@ def prediction(request):
                             'actress' : actress,
                             'composer' : composer,
                             'director' : director}, index=[0])
+
         print(df)
+
         if df.empty:
             error_message = 'The dataframe is empty.'
+
             return render(request, 'prediction.html', {'error_message': error_message})
+
         return render(request, 'prediction.html', {'df': df})
+
     else:
         return render(request, 'prediction.html')
 
 
 
-
-
-
-
-
-# def prediction(request):
-#     if request.method == 'POST':
-#         elements = request.POST.getlist('elements[]')
-#         if not elements:
-#             error_message = 'You must enter at least one element.'
-#             return render(request, 'prediction.html', {'error_message': error_message})
-#         df = pd.DataFrame({'elements': elements})
-#         # do something with the dataframe
-#         if df.empty:
-#             error_message = 'The dataframe is empty.'
-#             return render(request, 'prediction.html', {'error_message': error_message})
-#         return render(request, 'prediction.html', {'df': df})
-#     else:
-#         return render(request, 'prediction.html')
-
-
-
 def recomendation(request):
-    if request.method == 'GET':
-        search_term = request.GET.get('q')
-        if search_term:
-            with connections['default'].cursor() as cursor:
-                cursor.execute("SELECT originalTitle FROM table_list_films WHERE originalTitle LIKE %s LIMIT 10", [f'%{search_term}%'])
-                films = [{'id': idx, 'text': row[0]} for idx, row in enumerate(cursor.fetchall())]
-        else:
-            films = []
-        return render(request, 'recomendation.html',dict({'films': films, 'count': len(films)}))
-    else:
-        film_name = request.POST.get('film_name')
-        return render(request, 'netfloox_app/recomendation.html')
 
+    model = Model_reco(verbose=True)
 
+    context={}
 
+    # interception d'un méssage POST
+    if request.method == "POST":
 
+        print('------------------------------------')
+        print(request.POST.get("film"))
+        print(request.POST.get("film_but"))
+        print('-------------------------------------')
 
+        # Si le message est issu du boutons de recommandation
+        if request.POST.get("film_but")=="@//@@///@@@@////":
 
-# def get_films(request):
-#     with connections['default'].cursor() as cursor:
-#         cursor.execute('SELECT originalTitle FROM table_list_films LIMIT 10')
-#         film_list = [element[0] for element in cursor.fetchall()]
-#         print(film_list)
-#         return film_list
+            df_reco = model.get_reco(request.POST.get("film"), 6)[1:]
+
+            print(df_reco)
+
+            context = {"df": df_reco}
+
+        # Si le message est issu du champs de saisie de films
+        elif request.POST.get("film") != "":
+
+            df = model.noms_films
+
+            options_html = []
+
+            # filtrage des fims en fonction du contenue du champs de saisie
+            df_filter = df[df["originalTitle"].fillna("").str.lower().str.contains(request.POST.get("film").lower())]
+
+            print(df_filter.shape[0])
+
+            # S'il y a mois de 600 lignes, la liste de films est envoyer
+            if df_filter.shape[0] < 600:
+
+                for option in df[df["originalTitle"].fillna("").str.lower().str.contains(request.POST.get("film").lower())].index:
+                    #print(df.iloc[option]["originalTitle"])
+                    options_html.append(df.iloc[option]["originalTitle"])
+
+                options_html = sorted(set(options_html))
+                context = {"test": options_html, 'txt_default': request.POST.get("film")}
+
+            else:
+                context = {"test": options_html, 'txt_default': request.POST.get("film")}
+
+    return render(request, "recomendation.html", context)
