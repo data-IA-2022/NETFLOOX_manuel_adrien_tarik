@@ -1,7 +1,7 @@
 import gzip
 import time
-import os
 from math import ceil
+from .utils import calc_time, relative_path
 
 import pandas as pd
 import sqlalchemy.types as SQLAT
@@ -24,21 +24,8 @@ def convert_dtype(types: dict) -> dict:
     return {k: conv[v]() if len(v.split()) == 1 else conv[v.split()[0]](int(v.split()[1])) for k, v in types.items()}
 
 
-def calc_time(start_time):
-
-    d = time.time() - start_time
-    h = int(d / 3600)
-    h = f"{h} h " if d > 3600 else ''
-    m = int(d % 3600 / 60)
-    m = f"{m} m " if d > 60 else ''
-    s = int(d % 3600 % 60)
-    s = f"{s} s"
-    return h + m + s
-
-
 ##### Chargement des configs
-path_config = os.path.join(os.path.dirname(__file__), 'config_db_load.yaml')
-config = yaml.safe_load(open(path_config, 'r'))
+config = yaml.safe_load(open(relative_path('python_files', 'config_db_load.yaml'), 'r'))
 
 param = config['param']
 
@@ -52,8 +39,7 @@ meta = MetaData()
 
 ##### Connexion bdd
 print(f"\nConnexion à '{section}'...")
-path_config = os.path.join(os.path.dirname(__file__), param['connection_config_file'])
-engine = db_con.create_db(path_config, section, pyodbc=False)
+engine = db_con.create_db(relative_path('python_files', param['connection_config_file']), section, pyodbc=False)
 
 if engine == None:
     quit()
@@ -125,7 +111,7 @@ for table_name in table_names:
     table_time = time.time()
 
     table_config = config['files'][table_name]
-    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), doss, table_config['name_file'])
+    path = relative_path(doss, table_config['name_file'])
 
     print(f"{n_table:2}/{len(table_names)} - {table_name} - nombre de lines : ", end='')
     nb_lines = sum(1 for _ in gzip.open(path)) - 1

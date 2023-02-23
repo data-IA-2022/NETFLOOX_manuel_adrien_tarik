@@ -17,12 +17,14 @@
         <button method="POST"  id="myButton" name="film_but" value="@//@@///@@@@////">Envoyer</button>
     </form>
 
+    <br><br>
+
     {% if df is not None and not df.empty %}
-        <h2>Dataframe:</h2>
+        <h2>Liste de film similaire à '{{ txt_default }}' :</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Score</th>
+                    <th>% de similarité</th>
                     <th>Titre</th>
                 </tr>
             </thead>

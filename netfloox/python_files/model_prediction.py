@@ -1,53 +1,29 @@
-# Import et traitement des données
 import pandas as pd
-import numpy as np
 import time
-from os.path import exists, join, dirname
+from os.path import exists
+from .utils import calc_time, relative_path
 from sqlalchemy import text
 import pickle
-import python_files.db_connection as db_con #pour connection à la bdd
+import python_files.db_connection as db_con
 
-# Graphiques
-import seaborn as sns ; sns.set()
-import matplotlib.pyplot as plt
-
-# Machine learning - Preprocessing
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, RobustScaler
 from sklearn.impute import KNNImputer, SimpleImputer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.compose import ColumnTransformer
-
-# Machine learning - Automatisation
 from sklearn.pipeline import Pipeline
 from sklearn import set_config
-
-# Machine learning - Modèle d'apprentissage supervisé
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.decomposition import PCA
-
-# Machine learning - Modèle selection
 from sklearn.model_selection import train_test_split, GridSearchCV
-
-# Machine learning - Métriques d'erreur
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay, f1_score, fbeta_score, r2_score
-
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import LabelEncoder, RobustScaler
-from sklearn.decomposition import PCA
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import GridSearchCV
 
 
 def create_df_for_dataset(path):
 
-    doss_py = dirname(__file__)
-
     #connection à la base
     try: 
-        path_config = join(doss_py, 'config.yaml')
-        conn = db_con.connect_to_db(path_config, "mysql_azure_netfloox")
+        conn = db_con.connect_to_db(relative_path('python_files', 'config.yaml'), "mysql_azure_netfloox")
     except ValueError:
         print("Could not connect to database.")
         quit()
@@ -88,22 +64,27 @@ def create_df_for_dataset(path):
 
 
 def get_dataset():
-    path = join(dirname(dirname(__file__)), 'data', 'dataset_prédiction.pickle')
+
+    path = relative_path('data', 'dataset_prediction.pickle')
 
     if not exists(path):
         dataset = create_df_for_dataset(path)
     else:
         dataset =  pickle.load(open(path, 'rb'))
+
     return dataset
 
 
 def get_features_target(dataset):
+
     y = dataset['averageRating']
     X = dataset.drop(columns=['averageRating'])
+
     return X, y
 
 
 def get_pipeline_preparation(X):
+
     #Sélections des variables catégorielles et numériques
     column_cat = X.select_dtypes(include=['object']).columns
     column_num = X.select_dtypes(exclude=['object']).columns
@@ -128,18 +109,22 @@ def get_pipeline_preparation(X):
         transformers=transformers
     )
     print("fin de l'étape de préparation")
-    #
+
     return preparation
 
 
 def get_pipeline_model(prepa, model):
+
     pipeline = Pipeline([('preparation', prepa),
-    #('pca',PCA()),
-     ('model',model)])
+        #('pca',PCA()),
+        ('model',model)]
+    )
+
     return pipeline
 
 
 def grid_search(pipeline, X, y):
+
     param_grid = [
         {
             'model': [RandomForestRegressor()],
@@ -154,8 +139,10 @@ def grid_search(pipeline, X, y):
         #     'pca__n_components': [10, 20, 30],
         # }
     ]
+
     grid_search = GridSearchCV(pipeline, param_grid, cv=5, verbose= 3)
     grid_search.fit(X, y)
+
     return grid_search
 
 
@@ -177,27 +164,21 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
 
     #pipe_model = get_pipeline_model(prepa, model)
-    # pipe_model.fit(X_train, y_train)
+    #pipe_model.fit(X_train, y_train)
 
     pipe_model = get_pipeline_model(prepa, model)
     print(pipe_model)
     gridS = grid_search(pipe_model, X, y)
     print(gridS.best_params_, gridS.best_estimator_)
 
-    path = join(dirname(dirname(__file__)), 'modeles', 'gridS.model')
+    path = relative_path('modeles', 'gridS.model')
     pickle.dump(gridS, open(path, 'wb'))
 
     y_pred = gridS.predict(X_test)
     score = r2_score(y_test, y_pred)
     print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
 
-    d = time.time() - start_time
-    h = f"{int(d/3600):3} h"
-    d %= 3600
-    m = f"{int(d/60):02} m"
-    s = f"{int(d%60):02}"
-
-    print("Temps total :", h, m, s)
+    print("Temps total :", calc_time(start_time))
 
 
 if __name__ == '__main__':

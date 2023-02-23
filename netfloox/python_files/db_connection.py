@@ -18,6 +18,7 @@ def demande_bool(text: str, value_True: list, value_False: list) -> bool:
 
 
 def create_db(config_file, section, ssh=False, local_port=None, ssh_section=None, pyodbc = False):
+
     # Read configuration information from file
     config = yaml.safe_load(open(config_file, 'r'))
 

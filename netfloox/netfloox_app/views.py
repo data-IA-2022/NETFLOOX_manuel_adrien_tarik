@@ -1,15 +1,9 @@
 from django.shortcuts import render
-from django.db import connections
-from django import forms
-import pandas as pd 
-import sys
-sys.path.append('../')
-from .models import TableRegionDiffusionAvgRatingVotesFilms #TableListFilms
-from django.http import JsonResponse
-from python_files.analyse import Nombre_films_produits_par_regions
+import pandas as pd
+
 from python_files.model_recommandation import Model_reco
-from analyse import Diagrame_3D_numeric_dimentions #Nombre_films_produits_par_regions
-from df_loading import datasets as dts
+from python_files.analyse import diagrame_3D_numeric_dimentions #Nombre_films_produits_par_regions
+from python_files.df_loading import datasets as dts
 from plotly.offline import plot
 
 
@@ -25,14 +19,16 @@ def home(request):
 
 def analyse(request):
 
-    fig = Diagrame_3D_numeric_dimentions(dts['tables']['films'])
+    fig = diagrame_3D_numeric_dimentions(dts['tables']['films'])
     graph = plot(fig, output_type="div")
+
     return render(request, 'analyse.html', context={"graphique" : graph})
 
 
 def prediction(request):
 
     if request.method == 'POST':
+
         original_title = request.POST.get('originalTitle')
         runtime_minutes = request.POST.get('runtimeMinutes', None)
         is_adult = request.POST.get('isAdult', 0)
@@ -68,6 +64,7 @@ def prediction(request):
         return render(request, 'prediction.html', {'df': df})
 
     else:
+
         return render(request, 'prediction.html')
 
 
@@ -75,8 +72,6 @@ def prediction(request):
 def recomendation(request):
 
     model = Model_reco(verbose=True)
-
-    context={}
 
     # interception d'un méssage POST
     if request.method == "POST":
@@ -93,7 +88,7 @@ def recomendation(request):
 
             print(df_reco)
 
-            context = {"df": df_reco}
+            return render(request, "recomendation.html", {"df": df_reco, 'txt_default': request.POST.get("film")})
 
         # Si le message est issu du champs de saisie de films
         elif request.POST.get("film") != "":
@@ -115,9 +110,7 @@ def recomendation(request):
                     options_html.append(df.iloc[option]["originalTitle"])
 
                 options_html = sorted(set(options_html))
-                context = {"test": options_html, 'txt_default': request.POST.get("film")}
 
-            else:
-                context = {"test": options_html, 'txt_default': request.POST.get("film")}
+            return render(request, "recomendation.html", {"test": options_html, 'txt_default': request.POST.get("film")})
 
-    return render(request, "recomendation.html", context)
+    return render(request, "recomendation.html")

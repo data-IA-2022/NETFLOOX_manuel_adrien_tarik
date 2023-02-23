@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.compose import ColumnTransformer
@@ -7,30 +6,19 @@ from sklearn.preprocessing import RobustScaler, MinMaxScaler
 from sqlalchemy import text
 
 from . import db_connection as db_con
-from os.path import exists, join, dirname, basename
+from os.path import exists, basename, dirname
+from os import mkdir
 import pickle
 from math import ceil
 import time
-
-
-def calc_time(start_time):
-
-    d = time.time() - start_time
-    h = int(d / 3600)
-    h = f"{h} h " if d > 3600 else ''
-    m = int(d % 3600 / 60)
-    m = f"{m} m " if d > 60 else ''
-    s = int(d % 3600 % 60)
-    s = f"{s} s"
-    return h + m + s
+from .utils import relative_path, calc_time
 
 
 def dl_data_from_db(list_columns, table, where, verbose):
 
     sql = text(f"SELECT {', '.join(list_columns)} FROM {table} {where}")
 
-    path_config = join(dirname(__file__), 'config.yaml')
-    conn = db_con.connect_to_db(path_config, "mysql_azure_netfloox")
+    conn = db_con.connect_to_db(relative_path('python_files', 'config.yaml'), "mysql_azure_netfloox")
 
     if verbose: print("-> requête sql... ", end='')
 
@@ -125,6 +113,7 @@ def get_data(path_file, verbose = False):
 
         if verbose: print('ok\n', calc_time(start_time), end='\n\n')
 
+        if not exists(dirname(path_file)): mkdir(dirname(path_file))
         pickle.dump((df_noms, df_prep), open(path_file, 'wb'))
 
     else:
@@ -157,7 +146,7 @@ class Model_reco:
 
     def __init__(
         self,
-        path_file = join(dirname(dirname(__file__)), 'data', 'data_recommandation.data'),
+        path_file = relative_path('data', 'data_recommandation.data'),
         verbose   = False
     ):
 

@@ -14,14 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from netfloox_app.views import  home, analyse_, prediction, recomendation #base, get_films
+from django.urls import path
+from netfloox_app.views import  home, analyse, prediction, recomendation #base, get_films
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('analyse/', analyse_, name='analyse'),
+    path('analyse/', analyse, name='analyse'),
     path('prediction/', prediction, name='prediction'),
     path('recomendation/', recomendation, name='recomendation'),
     

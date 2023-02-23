@@ -1,5 +1,6 @@
 import requests
-import os
+from os.path import join
+from .utils import relative_path
 
 url = 'https://datasets.imdbws.com/'
 
@@ -14,7 +15,7 @@ list_files = [
 ]
 
 folder_save = 'data'
-path_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), folder_save)
+path_folder = relative_path(folder_save)
 
 for f in list_files:
 
@@ -22,7 +23,7 @@ for f in list_files:
 
     r = requests.get(url + f)
 
-    path_file = os.path.join(path_folder, f)
+    path_file = join(path_folder, f)
     open(path_file, 'wb').write(r.content)
 
     print("Done")

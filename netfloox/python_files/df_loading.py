@@ -1,15 +1,11 @@
 import pandas as pd
 from .db_connection import connect_to_db
-import yaml
-import os
+from .utils import relative_path
 
-doss_python_files = os.path.dirname(__file__)
-path_config = os.path.join(doss_python_files, 'config.yaml')
-path_dataset = os.path.join(os.path.dirname(doss_python_files), 'data', 'dataset_prédiction.pickle')
 
-conn = connect_to_db(path_config, 'mysql_azure_netfloox')
+conn = connect_to_db(relative_path('python_files', 'config.yaml'), 'mysql_azure_netfloox')
 
-datasets = {'tables' : {'films' : pd.read_pickle(path_dataset)},
+datasets = {'tables' : {'films' : pd.read_pickle(relative_path('data', 'dataset_prediction.pickle'))},
             'analyses': {'notes' : pd.read_sql_table('table_distrib_notes', conn),
                          'types' : pd.read_sql_table('table_distrib_types', conn),
                          'films_votes_rating_annee' : pd.read_sql_table('table_list_films_ex', conn),
