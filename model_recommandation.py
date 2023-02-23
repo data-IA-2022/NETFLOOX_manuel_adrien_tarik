@@ -168,7 +168,11 @@ class Model_reco:
 
     def get_reco(self, value, best_of : int, by = 'originalTitle'):
 
-        index_y = get_index(value, self.noms_films[by])
+        try:
+            index_y = get_index(value, self.noms_films[by])
+        except IndexError:
+            print(f"Le film '{value}' n'existe pas dans la collone {by}.")
+            return pd.DataFrame(columns=['score', 'tconst', 'originalTitle'])
 
         if self.verbose:
             print("Calcul des similaritées... ", end='')
@@ -202,7 +206,7 @@ def main():
 
     model = Model_reco(verbose=True)
 
-    df = model.get_reco('Bombies', 11)
+    df = model.get_reco('Star Wars: The Clone Wars', 11)
 
     print(df)
 
