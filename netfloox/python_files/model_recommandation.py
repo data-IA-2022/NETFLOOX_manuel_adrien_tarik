@@ -6,7 +6,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler, MinMaxScaler
 from sqlalchemy import text
 
-import db_connection as db_con
+from . import db_connection as db_con
 from os.path import exists, join, dirname, basename
 import pickle
 from math import ceil

@@ -88,7 +88,7 @@ def create_df_for_dataset(path):
 
 
 def get_dataset():
-    path = join(dirname(dirname(__file__)), 'modeles', 'dataset_prédiction.pickle')
+    path = join(dirname(dirname(__file__)), 'data', 'dataset_prédiction.pickle')
 
     if not exists(path):
         dataset = create_df_for_dataset(path)
@@ -111,21 +111,22 @@ def get_pipeline_preparation(X):
     #Transformation des données cat et num
     #Pas d'imputation içi remplacer les éléments manquants par des acteurs non présents dans les films non renseignés n'a aucun intérêt.
     transfo_cat = Pipeline(steps=[
-        #('bow', CountVectorizer())
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = False))
+        ('bow', CountVectorizer())
+        #('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = False))
     ])
+
     # Je choisi içi un robustScaler a cause de la colonne runtimeMinutes qui dispose d'outliers 1min à des milliers de min
     transfo_num = Pipeline(steps=[
         ('imputation', KNNImputer(n_neighbors=3, weights="uniform")),
         ('scaling', RobustScaler())
     ])
 
+    transformers = [('data_num', transfo_num , column_num)] + [('data_' + cc, transfo_cat, cc) for cc in column_cat]
+
     #Transformation des features
     preparation = ColumnTransformer(
-    transformers=[
-        ('data_cat', transfo_cat , column_cat),
-        ('data_num', transfo_num , column_num)
-    ])
+        transformers=transformers
+    )
     print("fin de l'étape de préparation")
     #
     return preparation
@@ -133,7 +134,7 @@ def get_pipeline_preparation(X):
 
 def get_pipeline_model(prepa, model):
     pipeline = Pipeline([('preparation', prepa),
-    ('pca',PCA()),
+    #('pca',PCA()),
      ('model',model)])
     return pipeline
 
