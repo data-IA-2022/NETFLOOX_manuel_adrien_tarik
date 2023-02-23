@@ -7,9 +7,39 @@
     <h1>Prediction Page</h1>
     <form method="POST">
         {% csrf_token %}
-        <label for="elements">Enter elements:</label>
-        <input type="text" id="elements" name="elements[]">
+        <br><br>
+        <label for="originalTitle">Original Title:</label>
+        <input type="text" id="originalTitle" name="originalTitle" required></input>
+        <br><br>
+        <label for="runtimeMinutes">Runtime Minutes:</label>
+        <input type="number" id="runtimeMinutes" name="runtimeMinutes"></input>
+        <br><br>
+        <label for="isAdult">Is Adult:</label>
+        <select id="isAdult" name="isAdult">
+            <option value= 0 >No</option>
+            <option value= 1>Yes</option>
+        </select>
+        <br><br>
+        <label for="startYear">Start Year:</label>
+        <input type="month" id="startYear" name="startYear"></input>
+        <br><br>
+        <label for="genres">Genres:</label>
+        <textarea id="genres" name="genres"></textarea>
+        <br><br>
+        <label for="actor">Actor:</label>
+        <textarea id="actor" name="actor"></textarea>
+        <br><br>
+        <label for="actress">Actress:</label>
+        <textarea id="actress" name="actress"></textarea>
+        <br><br>
+        <label for="composer">Composer:</label>
+        <textarea id="composer" name="composer"></textarea>
+        <br><br>
+        <label for="director">Director:</label>
+        <textarea id="director" name="director"></textarea>
+        <br><br>
         <input type="submit" value="Submit">
+    </form>
     </form>
     <div class="result-form">
     {% if error_message %}
@@ -22,14 +52,30 @@
             <thead>
                 <tr>
                     <th>Index</th>
-                    <th>Elements</th>
+                    <th>Original Title</th>
+                    <th>Runtime Minutes</th>
+                    <th>Is Adult</th>
+                    <th>Start Year</th>
+                    <th>Genres</th>
+                    <th>Actor</th>
+                    <th>Actress</th>
+                    <th>Composer</th>
+                    <th>Director</th>
                 </tr>
             </thead>
             <tbody>
                 {% for index, row in df.iterrows %}
                     <tr>
                         <td>{{ index }}</td>
-                        <td>{{ row.elements }}</td>
+                        <td>{{ row.originalTitle }}</td>
+                        <td>{{ row.runtimeMinutes }}</td>
+                        <td>{{ row.isAdult }}</td>
+                        <td>{{ row.startYear }}</td>
+                        <td>{{ row.genres }}</td>
+                        <td>{{ row.actor }}</td>
+                        <td>{{ row.actress }}</td>
+                        <td>{{ row.composer }}</td>
+                        <td>{{ row.director }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

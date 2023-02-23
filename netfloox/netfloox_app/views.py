@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from django.db import connections
+from django import forms
 import pandas as pd 
 import sys
 sys.path.append('../')
-from .models import TableListFilms
+from .models import TableRegionDiffusionAvgRatingVotesFilms #TableListFilms
 from django.http import JsonResponse
-from analyse import Nombre_films_produits_par_regions
+from analyse import Diagrame_3D_numeric_dimentions #Nombre_films_produits_par_regions
 from df_loading import datasets as dts
+from plotly.offline import plot
+
 
 
 
@@ -17,23 +20,64 @@ def home(request):
     return render(request, 'home.html')
 
 def analyse(request):
-    graph = Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])  
+    fig = Diagrame_3D_numeric_dimentions(dts['tables']['films'])
+    graph = plot(fig, output_type="div")
     return render(request, 'analyse.html', context={"graphique" : graph})
+
 
 def prediction(request):
     if request.method == 'POST':
-        elements = request.POST.getlist('elements[]')
-        if not elements:
-            error_message = 'You must enter at least one element.'
+        original_title = request.POST.get('originalTitle')
+        runtime_minutes = request.POST.get('runtimeMinutes', None)
+        is_adult = request.POST.get('isAdult', 0)
+        start_year = request.POST.get('startYear', None)
+        genres = request.POST.get('genres', '')
+        actor = request.POST.get('actor', '')
+        actress = request.POST.get('actress', '')
+        composer = request.POST.get('composer', '')
+        director = request.POST.get('director', '')
+        if not original_title:
+            error_message = 'You must enter an original title.'
             return render(request, 'prediction.html', {'error_message': error_message})
-        df = pd.DataFrame({'elements': elements})
-        # do something with the dataframe
+        # do something with the input data
+        df = pd.DataFrame({'originalTitle': original_title,
+                            'runtimeMinutes' : runtime_minutes,
+                            'isAdult' : is_adult,
+                            'startYear' : start_year,
+                            'genres' : genres,
+                            'actor' : actor,
+                            'actress' : actress,
+                            'composer' : composer,
+                            'director' : director}, index=[0])
+        print(df)
         if df.empty:
             error_message = 'The dataframe is empty.'
             return render(request, 'prediction.html', {'error_message': error_message})
         return render(request, 'prediction.html', {'df': df})
     else:
         return render(request, 'prediction.html')
+
+
+
+
+
+
+
+
+# def prediction(request):
+#     if request.method == 'POST':
+#         elements = request.POST.getlist('elements[]')
+#         if not elements:
+#             error_message = 'You must enter at least one element.'
+#             return render(request, 'prediction.html', {'error_message': error_message})
+#         df = pd.DataFrame({'elements': elements})
+#         # do something with the dataframe
+#         if df.empty:
+#             error_message = 'The dataframe is empty.'
+#             return render(request, 'prediction.html', {'error_message': error_message})
+#         return render(request, 'prediction.html', {'df': df})
+#     else:
+#         return render(request, 'prediction.html')
 
 
 

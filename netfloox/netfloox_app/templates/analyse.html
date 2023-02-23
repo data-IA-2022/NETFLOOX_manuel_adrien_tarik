@@ -5,5 +5,12 @@
 {% block content %}
 <div class="page-container">
     <h1>Analyse Page</h1>
+    <div class="diag3D">
+        <h2>Analyse des films par années sur 3 axes durée / note moyenne / nombres de votes</h2>
+        {% autoescape off %}
+            {{ graphique }}
+        {% endautoescape %}
+    </div>
 </div>
+
 {% endblock %}

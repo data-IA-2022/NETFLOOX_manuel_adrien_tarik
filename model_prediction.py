@@ -86,7 +86,7 @@ def create_df_for_dataset():
 
 
 def get_dataset():
-    filename = "modeles/dataset_prédiction.pickle"
+    filename = "data/dataset_prédiction.pickle"
 
     if not exists(filename):
         dataset = create_df_for_dataset()
@@ -109,21 +109,22 @@ def get_pipeline_preparation(X):
     #Transformation des données cat et num
     #Pas d'imputation içi remplacer les éléments manquants par des acteurs non présents dans les films non renseignés n'a aucun intérêt.
     transfo_cat = Pipeline(steps=[
-        #('bow', CountVectorizer())
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = False))
+        ('bow', CountVectorizer())
+        #('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output = False))
     ])
+
     # Je choisi içi un robustScaler a cause de la colonne runtimeMinutes qui dispose d'outliers 1min à des milliers de min
     transfo_num = Pipeline(steps=[
         ('imputation', KNNImputer(n_neighbors=3, weights="uniform")),
         ('scaling', RobustScaler())
     ])
 
+    transformers = [('data_num', transfo_num , column_num)] + [('data_' + cc, transfo_cat, cc) for cc in column_cat]
+
     #Transformation des features
     preparation = ColumnTransformer(
-    transformers=[
-        ('data_cat', transfo_cat , column_cat),
-        ('data_num', transfo_num , column_num)
-    ])
+        transformers=transformers
+    )
     print("fin de l'étape de préparation")
     #
     return preparation
@@ -131,7 +132,7 @@ def get_pipeline_preparation(X):
 
 def get_pipeline_model(prepa, model):
     pipeline = Pipeline([('preparation', prepa),
-    ('pca',PCA()),
+    # ('pca',PCA()),
      ('model',model)])
     return pipeline
 
@@ -159,7 +160,7 @@ def grid_search(pipeline, X, y):
 def main():
 
     start_time = time.time()
-
+    print("début du prog")
     dataset = get_dataset()
     print(dataset.columns)
     print(dataset.shape)
@@ -169,7 +170,7 @@ def main():
     X, y = get_features_target(dataset)
 
     prepa = get_pipeline_preparation(X)
-    model = RandomForestRegressor()
+    model = RandomForestRegressor(n_estimators = 400, max_depth = 10, verbose = 2)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
 
@@ -178,12 +179,14 @@ def main():
 
     pipe_model = get_pipeline_model(prepa, model)
     print(pipe_model)
-    gridS = grid_search(pipe_model, X, y)
-    print(gridS.best_params_, gridS.best_estimator_)
+    pipe_model.fit(X, y)
+    # gridS = grid_search(pipe_model, X, y)
+    # print(gridS.best_params_, gridS.best_estimator_)
 
-    pickle.dump(gridS, open('modeles/gridS.model', 'wb'))
+    pickle.dump(pipe_model, open('modeles/predictionRfr.model', 'wb'))
 
-    y_pred = gridS.predict(X_test)
+    y_pred = pipe_model.predict(X_test)
+    print(X_test)
     score = r2_score(y_test, y_pred)
     print("Performance du modèle RandomForestRegressor - Accuracy score :", round(score, 5))
 

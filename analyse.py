@@ -176,9 +176,9 @@ def Nombre_films_produits_par_regions(table):
     ax.invert_yaxis()  # Inverse l'ordre des éléments sur l'axe Y
     ax.set_xlabel('Nombre de films')
     ax.set_title('Nombre de films produits par regions')
-    
-    plt    
-    
+    res = plt
+    return res   
+  
 def Part_films_produits_par_regions(table):  
     
     labels = ['US-GB', 'Reste du monde'] 
@@ -217,7 +217,7 @@ def Diagrame_3D_numeric_dimentions(table):
     
     fig = px.scatter_3d(table, x='averageRating', y='numVotes', z='runtimeMinutes', color='startYear',  color_continuous_scale='viridis')
     fig.update_layout(scene_zaxis_type="log")
-    fig.show(renderer='browser')
+    return fig #.show(renderer='html')
     
 def Correlation_numeric_dimentions(table):  
     
@@ -259,24 +259,27 @@ def Correlation_Categorielle_dimentions(table, nb_echantillons = 100):
     plt.title("Corrélation chi2 {} echantillons".format(nb_echantillons), fontsize=14)
     
     plt.show()
-   
-Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])    
-Nombre_films_difusés_par_regions(dts['analyses']['region_diffusion_films'])  
-Correspondance_Notes_Nombre_Votes_Decennies(dts['analyses']['decenie_votes_rating'])
-Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'])
-Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], False, True)
-Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], True)
-Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42), True)
-Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42))
-Répartition_notes_2_films(dts['analyses']['notes'])  
-Répartition_items_par_types(dts['analyses']['types'])  
-Répartition_items_par_types(dts['analyses']['types'][1:-1], True)  
-Répartition_flms_sans_notes(dts['analyses']['prop_notes_null'])
-Part_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])
-Part_films_difusion_par_regions(dts['analyses']['region_diffusion_films'])
-Diagrame_3D_numeric_dimentions(dts['tables']['films'])
-Correlation_numeric_dimentions(dts['tables']['films'])
-Correlation_Categorielle_dimentions(dts['tables']['films'])
-Correlation_Categorielle_dimentions(dts['tables']['films'],1000)
-Correlation_Categorielle_dimentions(dts['tables']['films'],5000)
-Correlation_Categorielle_dimentions(dts['tables']['films'],10000)
+
+if __name__=='__main__':
+
+    Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])    
+    Nombre_films_difusés_par_regions(dts['analyses']['region_diffusion_films'])  
+    Correspondance_Notes_Nombre_Votes_Decennies(dts['analyses']['decenie_votes_rating'])
+    Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'])
+    Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], False, True)
+    Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'], True)
+    Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42), True)
+    Correspondance_Notes_Nombre_Votes_Annee(dts['analyses']['films_votes_rating_annee'].sample(n=1000, random_state=42))
+    Répartition_notes_2_films(dts['analyses']['notes'])  
+    Répartition_items_par_types(dts['analyses']['types'])  
+    Répartition_items_par_types(dts['analyses']['types'][1:-1], True)  
+    Répartition_flms_sans_notes(dts['analyses']['prop_notes_null'])
+    Part_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])
+    Part_films_difusion_par_regions(dts['analyses']['region_diffusion_films'])
+    Diagrame_3D_numeric_dimentions(dts['tables']['films'])
+    Correlation_numeric_dimentions(dts['tables']['films'])
+    Correlation_Categorielle_dimentions(dts['tables']['films'])
+    Correlation_Categorielle_dimentions(dts['tables']['films'],1000)
+    Correlation_Categorielle_dimentions(dts['tables']['films'],5000)
+    Correlation_Categorielle_dimentions(dts['tables']['films'],10000)
+

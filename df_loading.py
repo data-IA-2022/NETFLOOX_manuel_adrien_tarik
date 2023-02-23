@@ -4,7 +4,7 @@ import yaml
 
 conn = connect_to_db('../config.yaml', 'mysql_azure_netfloox')
 
-datasets = {'tables' : {'films' : pd.read_pickle('./projet_netfloox/dataset_prédiction.pickle')},
+datasets = {'tables' : {'films' : pd.read_pickle('..\\data\\dataset_prédiction_numVotes.pickle')},
             'analyses': {'notes' : pd.read_sql_table('table_distrib_notes', conn),
                          'types' : pd.read_sql_table('table_distrib_types', conn),
                          'films_votes_rating_annee' : pd.read_sql_table('table_list_films_ex', conn),
