@@ -15,14 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from netfloox_app.views import  home, analyse, prediction, recomendation #base, get_films
-
+from netfloox_app.views import  home, analyse_, prediction, recomendation #base, get_films
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('analyse/', analyse, name='analyse'),
+    path('analyse/', analyse_, name='analyse'),
     path('prediction/', prediction, name='prediction'),
     path('recomendation/', recomendation, name='recomendation'),
     
