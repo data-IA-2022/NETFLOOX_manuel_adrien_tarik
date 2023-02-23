@@ -1,19 +1,19 @@
 param:
 
-    chunksize:              1_000_000
+    chunksize:              5_000_000
     folder:                 'data'
 
     connection_config_file: config.yaml
-    config_file_section:    local
+    config_file_section:    mysql_azure_netfloox
 
 files:
 
-    title_basics:
+    movies:
 
         name_file:          title.basics.tsv.gz
         na_values:          ['\N', 'N']
         primary_keys:       ['tconst']
-        columns:
+        column_types:
 
             tconst:             VARCHAR 10
             titleType:          VARCHAR 15
@@ -25,12 +25,12 @@ files:
             runtimeMinutes:     INTEGER
             genres:             VARCHAR 100
 
-    name_basics:
+    persons:
 
         name_file:          name.basics.tsv.gz
         na_values:          ['\N', 'N']
         primary_keys:       ['nconst']
-        columns:
+        column_types:
 
             nconst:             VARCHAR 10
             primaryName:        VARCHAR 300
@@ -38,22 +38,33 @@ files:
             deathYear:          SMALLINT
             primaryProfession:  VARCHAR 300
 
-    name_basics_knownfortitles:
+    knownfor:
 
         name_file:          name.basics.tsv.gz
         na_values:          ['\N', 'N']
+        primary_keys:       ['nconst', 'tconst']
+        foreign_keys:
+
+            nconst:             persons.nconst
+            tconst:             movies.tconst
+
         explode_on :        knownForTitles
         explode_new_name :  tconst
-        columns:
+        column_types:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
 
-    title_akas:
+    titles:
 
         name_file:          title.akas.tsv.gz
         na_values:          ['\N', 'N']
-        columns:
+        primary_keys:       ['titleId', 'ordering']
+        foreign_keys:
+
+            titleId:             movies.tconst
+
+        column_types:
 
             titleId:            VARCHAR 10
             ordering:           SMALLINT
@@ -64,44 +75,69 @@ files:
             attributes:         VARCHAR 255
             isOriginalTitle:    BOOLEAN
 
-    title_crew_directors:
+    directors:
 
         name_file:          title.crew.tsv.gz
         na_values:          ['\N', 'N']
+        primary_keys:       ['nconst', 'tconst']
+
+        foreign_keys:
+
+            nconst:             persons.nconst
+            tconst:             movies.tconst
+
         explode_on :        directors
         explode_new_name :  nconst
-        columns:
+        column_types:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
 
-    title_crew_writers:
+    writers:
 
         name_file:          title.crew.tsv.gz
         na_values:          ['\N', 'N']
+        primary_keys:       ['nconst', 'tconst']
+        foreign_keys:
+
+            nconst:             persons.nconst
+            tconst:             movies.tconst
+
         explode_on :        writers
         explode_new_name :  nconst
-        columns:
+        column_types:
 
             nconst:             VARCHAR 10
             tconst:             VARCHAR 10
 
-    title_episode:
+    episodes:
 
         name_file:          title.episode.tsv.gz
         na_values:          ['\N', 'N']
-        columns:
+        primary_keys:       ['tconst']
+        foreign_keys:
+
+            tconst:             movies.tconst
+            parentTconst:       movies.tconst
+
+        column_types:
 
             tconst:             VARCHAR 10
             parentTconst:       VARCHAR 10
             seasonNumber:       SMALLINT
             episodeNumber:      INTEGER
 
-    title_principals:
+    principals:
 
         name_file:          title.principals.tsv.gz
         na_values:          ['\N', 'N']
-        columns:
+        primary_keys:       ['tconst', 'ordering']
+        foreign_keys:
+
+            nconst:             persons.nconst
+            tconst:             movies.tconst
+
+        column_types:
 
             tconst:             VARCHAR 10
             ordering:           SMALLINT
@@ -110,11 +146,16 @@ files:
             job:                VARCHAR 300
             characters:         VARCHAR 1400
 
-    title_ratings:
+    ratings:
 
         name_file:          title.ratings.tsv.gz
         na_values:          ['\N', 'N']
-        columns:
+        primary_keys:       ['tconst']
+        foreign_keys:
+
+            tconst:             movies.tconst
+
+        column_types:
 
             tconst:             VARCHAR 10
             averageRating:      FLOAT
