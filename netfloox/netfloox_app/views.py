@@ -1,8 +1,13 @@
 from django.shortcuts import render
 from django.db import connections
 import pandas as pd 
+import sys
+sys.path.append('../')
 from .models import TableListFilms
 from django.http import JsonResponse
+from analyse import Nombre_films_produits_par_regions
+from df_loading import datasets as dts
+
 
 
 def base(request):
@@ -12,7 +17,8 @@ def home(request):
     return render(request, 'home.html')
 
 def analyse(request):
-    return render(request, 'analyse.html')
+    graph = Nombre_films_produits_par_regions(dts['analyses']['classement_regions_production_films'])  
+    return render(request, 'analyse.html', context={"graphique" : graph})
 
 def prediction(request):
     if request.method == 'POST':
