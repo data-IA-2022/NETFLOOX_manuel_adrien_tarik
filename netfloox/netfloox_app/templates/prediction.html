@@ -1,0 +1,40 @@
+<!-- netfloox_app/templates/netfloox_app/prediction.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <h1>Prediction Page</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="elements">Enter elements:</label>
+        <input type="text" id="elements" name="elements[]">
+        <input type="submit" value="Submit">
+    </form>
+    <div class="result-form">
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% endif %}
+
+    {% if df is not None and not df.empty %}
+        <h2>Dataframe:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Elements</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in df.iterrows %}
+                    <tr>
+                        <td>{{ index }}</td>
+                        <td>{{ row.elements }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!-- netfloox_app/templates/netfloox_app/recomendation.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <div class="page-container">
+    <h1>Recommendation Page</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="film_name">Select a film:</label>
+        <select id="film_name" name="film_name" aria-placeholder="Search for a film..."></select>
+        <button type="submit">Submit</button>
+    </form>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#film_name').select2({
+      ajax: {
+        url: "{% url 'netfloox_app:recomendation' %}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // Use 'q' instead of 'search_term'
+            page: params.page || 1
+          };
+        },
+        processResults: function (data, params) {
+          params.page = params.page || 1;
+          return {
+            results: data.films,
+            pagination: {
+              more: (params.page * 10) < data.count
+            }
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Search for a film...',
+      minimumInputLength: 3,
+      escapeMarkup: function (markup) { return markup; },
+      templateResult: function (film) { return film.text; },
+      templateSelection: function (film) { return film.text; }
+    });
+  });
+</script>
+</div>
+</body>
+{% endblock %}
