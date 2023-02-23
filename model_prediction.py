@@ -7,7 +7,7 @@ sys.path.append('/content/NETFLOOX_manuel_adrien_tarik')
 from os.path import exists
 from sqlalchemy import text
 import pickle
-import mydbconnection as mdbcon #pour connection à la bdd
+import db_connection as db_con #pour connection à la bdd
 
 # Graphiques
 import seaborn as sns ; sns.set()
@@ -45,7 +45,7 @@ from sklearn.model_selection import GridSearchCV
 def create_df_for_dataset():
     #connection à la base
     try: 
-        conn = mdbcon.connect_to_db("config.yaml", "mysql_azure_netfloox")
+        conn = db_con.connect_to_db("config.yaml", "mysql_azure_netfloox")
     except ValueError:
         print("Could not connect to database.")
         quit()
