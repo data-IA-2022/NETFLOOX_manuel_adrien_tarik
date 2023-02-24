@@ -1,5 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
+import pickle
+from python_files.utils import relative_path
 
 from python_files.model_recommandation import Model_reco
 from python_files.analyse import diagrame_3D_numeric_dimentions #Nombre_films_produits_par_regions
@@ -45,9 +47,9 @@ def prediction(request):
 
         # do something with the input data
         df = pd.DataFrame({'originalTitle': original_title,
-                            'runtimeMinutes' : runtime_minutes,
+                            'runtimeMinutes' : runtime_minutes if runtime_minutes != '' else None,
                             'isAdult' : is_adult,
-                            'startYear' : start_year,
+                            'startYear' : start_year.split('-')[0] if start_year != '' else None,
                             'genres' : genres,
                             'actor' : actor,
                             'actress' : actress,
@@ -61,11 +63,13 @@ def prediction(request):
 
             return render(request, 'prediction.html', {'error_message': error_message})
 
-        return render(request, 'prediction.html', {'df': df})
+        model = pickle.load(open(relative_path('modeles', 'predictionRfr.model'), 'rb'))
 
-    else:
+        result = round(model.predict(df)[0], 2)
 
-        return render(request, 'prediction.html')
+        return render(request, 'prediction.html', {'df': df, 'result': result})
+
+    return render(request, 'prediction.html')
 
 
 
